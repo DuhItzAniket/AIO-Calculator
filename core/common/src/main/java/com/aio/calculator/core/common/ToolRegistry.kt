@@ -94,210 +94,454 @@ object ToolRegistry {
         supportsHistory = true
     )
 
-    // ... [More algebra tools would be added here following the same pattern]
-    // Following the spec: Percentage, Percentage change, Percentage difference, Average,
-    // Weighted average, Ratio, Proportion, Fractions, Fraction simplification,
-    // Decimal to fraction, Equations, Linear equations, Quadratic equations,
-    // Simultaneous equations, GCF, LCM, Prime checker, Prime factorization,
-    // Divisibility, Factorial, Permutations, Combinations, Number generator,
-    // Fibonacci, Arithmetic sequence, Geometric sequence, Polynomial tools
+    val weightedAverage = ToolDefinition(
+        id = "weighted_average",
+        title = "Weighted Average",
+        category = ToolCategory.ALGEBRA,
+        description = "Calculate weighted average with weights",
+        iconName = "ic_category_algebra",
+        keywords = listOf("weighted", "average"),
+        aliases = listOf("weighted avg"),
+        calculatorType = CalculatorType.BASIC,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
+
+    val ratio = ToolDefinition(
+        id = "ratio",
+        title = "Ratio",
+        category = ToolCategory.ALGEBRA,
+        description = "Calculate ratio between two values",
+        iconName = "ic_category_algebra",
+        keywords = listOf("ratio", "proportion"),
+        aliases = listOf("proportion"),
+        calculatorType = CalculatorType.BASIC,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
+
+    val proportion = ToolDefinition(
+        id = "proportion",
+        title = "Proportion",
+        category = ToolCategory.ALGEBRA,
+        description = "Check if two ratios are proportional",
+        iconName = "ic_category_algebra",
+        keywords = listOf("proportion"),
+        calculatorType = CalculatorType.BASIC,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
 
     // ==========================================================================
     // STATISTICS & PROBABILITY TOOLS
     // ==========================================================================
-    // Following the spec: Mean, Median, Mode, Range, Variance, Standard deviation,
-    // Quartiles, Percentiles, IQR, Z-score, Weighted statistics, Basic probability,
-    // Conditional probability, Bayes theorem, Binomial probability, Expected value
+    val statisticsMean = ToolDefinition(
+        id = "statistics_mean",
+        title = "Mean",
+        category = ToolCategory.STATISTICS,
+        description = "Calculate the arithmetic mean",
+        iconName = "ic_category_statistics",
+        keywords = listOf("mean", "average"),
+        aliases = listOf("arithmetic mean"),
+        calculatorType = CalculatorType.BASIC,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
+
+    val statisticsMedian = ToolDefinition(
+        id = "statistics_median",
+        title = "Median",
+        category = ToolCategory.STATISTICS,
+        description = "Calculate the median value",
+        iconName = "ic_category_statistics",
+        keywords = listOf("median"),
+        calculatorType = CalculatorType.BASIC,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
+
+    val statisticsMode = ToolDefinition(
+        id = "statistics_mode",
+        title = "Mode",
+        category = ToolCategory.STATISTICS,
+        description = "Calculate the most frequent value",
+        iconName = "ic_category_statistics",
+        keywords = listOf("mode", "most frequent"),
+        calculatorType = CalculatorType.BASIC,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
+
+    val statisticsRange = ToolDefinition(
+        id = "statistics_range",
+        title = "Range",
+        category = ToolCategory.STATISTICS,
+        description = "Calculate range (max - min)",
+        iconName = "ic_category_statistics",
+        keywords = listOf("range"),
+        calculatorType = CalculatorType.BASIC,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
+
+    val statisticsVariance = ToolDefinition(
+        id = "statistics_variance",
+        title = "Variance",
+        category = ToolCategory.STATISTICS,
+        description = "Calculate variance",
+        iconName = "ic_category_statistics",
+        keywords = listOf("variance"),
+        calculatorType = CalculatorType.BASIC,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
+
+    val statisticsStdDeviation = ToolDefinition(
+        id = "statistics_std_dev",
+        title = "Standard Deviation",
+        category = ToolCategory.STATISTICS,
+        description = "Calculate standard deviation",
+        iconName = "ic_category_statistics",
+        keywords = listOf("standard deviation"),
+        calculatorType = CalculatorType.BASIC,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
 
     // ==========================================================================
-    // GEOMETRY TOOLS
+    // GEOMETRY TOOLS (2D)
     // ==========================================================================
-    // Following the spec: 2D (Square, Rectangle, Triangle, Equilateral triangle,
-    // Parallelogram, Rhombus, Trapezoid, Kite, Circle, Ellipse, Sector, Arc, Polygon)
-    // 3D (Cube, Cuboid, Cylinder, Cone, Sphere, Hemisphere, Prism, Pyramid, Torus)
-    // Calculations: area, perimeter, circumference, volume, surface area,
-    // missing dimensions, triangle solver
+    val geometrySquare = ToolDefinition(
+        id = "geometry_square",
+        title = "Square",
+        category = ToolCategory.GEOMETRY,
+        description = "Calculate area, perimeter of a square",
+        iconName = "ic_category_geometry",
+        keywords = listOf("square", "area", "perimeter"),
+        calculatorType = CalculatorType.CONVERTER,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
+
+    val geometryRectangle = ToolDefinition(
+        id = "geometry_rectangle",
+        title = "Rectangle",
+        category = ToolCategory.GEOMETRY,
+        description = "Calculate area, perimeter of a rectangle",
+        iconName = "ic_category_geometry",
+        keywords = listOf("rectangle", "area", "perimeter"),
+        calculatorType = CalculatorType.CONVERTER,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
+
+    val geometryTriangle = ToolDefinition(
+        id = "geometry_triangle",
+        title = "Triangle",
+        category = ToolCategory.GEOMETRY,
+        description = "Calculate area, perimeter of a triangle",
+        iconName = "ic_category_geometry",
+        keywords = listOf("triangle", "area", "perimeter"),
+        calculatorType = CalculatorType.CONVERTER,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
 
     // ==========================================================================
     // TRIGONOMETRY TOOLS
     // ==========================================================================
-    // Following the spec: sin, cos, tan, inverse functions, hyperbolic functions,
-    // degree/radian conversion, Pythagorean theorem, right triangle solver,
-    // law of sines, law of cosines
+    val trigonometrySin = ToolDefinition(
+        id = "trigonometry_sin",
+        title = "Sine",
+        category = ToolCategory.TRIGONOMETRY,
+        description = "Calculate sine of an angle",
+        iconName = "ic_category_trigonometry",
+        keywords = listOf("sin", "trig"),
+        calculatorType = CalculatorType.SCIENTIFIC,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
+
+    val trigonometryCos = ToolDefinition(
+        id = "trigonometry_cos",
+        title = "Cosine",
+        category = ToolCategory.TRIGONOMETRY,
+        description = "Calculate cosine of an angle",
+        iconName = "ic_category_trigonometry",
+        keywords = listOf("cos", "trig"),
+        calculatorType = CalculatorType.SCIENTIFIC,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
+
+    val trigonometryTan = ToolDefinition(
+        id = "trigonometry_tan",
+        title = "Tangent",
+        category = ToolCategory.TRIGONOMETRY,
+        description = "Calculate tangent of an angle",
+        iconName = "ic_category_trigonometry",
+        keywords = listOf("tan", "trig"),
+        calculatorType = CalculatorType.SCIENTIFIC,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
 
     // ==========================================================================
     // CALCULUS TOOLS
     // ==========================================================================
-    // Following the spec: derivative, numerical derivative, integration,
-    // definite integral, numerical integration, limits, roots, function analysis,
-    // basic graphing infrastructure
+    // Basic calculus placeholders
+    val calculusDerivative = ToolDefinition(
+        id = "calculus_derivative",
+        title = "Derivative",
+        category = ToolCategory.CALCULUS,
+        description = "Calculate derivative of a function",
+        iconName = "ic_category_calculus",
+        keywords = listOf("derivative"),
+        calculatorType = CalculatorType.SCIENTIFIC,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
 
     // ==========================================================================
     // PHYSICS TOOLS
     // ==========================================================================
-    // Following the spec: speed, velocity, acceleration, distance, time, kinematics,
-    // force, momentum, impulse, work, energy, power, pressure, density, torque,
-    // angular velocity, angular acceleration, centripetal force, gravity, waves,
-    // frequency, wavelength, period, decibel calculations, lens equation,
-    // mirror equation, magnification, ideal gas law, heat, specific heat,
-    // thermal expansion
+    val physicsSpeed = ToolDefinition(
+        id = "physics_speed",
+        title = "Speed",
+        category = ToolCategory.PHYSICS,
+        description = "Calculate speed, distance, time",
+        iconName = "ic_category_physics",
+        keywords = listOf("speed", "distance", "time"),
+        calculatorType = CalculatorType.CONVERTER,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
+
+    val physicsForce = ToolDefinition(
+        id = "physics_force",
+        title = "Force",
+        category = ToolCategory.PHYSICS,
+        description = "Calculate force, mass, acceleration",
+        iconName = "ic_category_physics",
+        keywords = listOf("force", "mass", "acceleration"),
+        calculatorType = CalculatorType.CONVERTER,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
 
     // ==========================================================================
     // CHEMISTRY TOOLS
     // ==========================================================================
-    // Following the spec: molar mass, mole calculator, mass/mole conversion,
-    // Avogadro conversion, molarity, molality, normality, dilution, ppm, ppb,
-    // pH, pOH, concentration, ideal gas law, stoichiometry, limiting reagent,
-    // theoretical yield, percentage yield, half-life, empirical formula,
-    // molecular formula, periodic table
+    val chemistryMolarMass = ToolDefinition(
+        id = "chemistry_molar_mass",
+        title = "Molar Mass",
+        category = ToolCategory.CHEMISTRY,
+        description = "Calculate molar mass",
+        iconName = "ic_category_chemistry",
+        keywords = listOf("molar mass"),
+        calculatorType = CalculatorType.CONVERTER,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
 
     // ==========================================================================
     // ELECTRONICS TOOLS
     // ==========================================================================
-    // Following the spec: Ohm's Law, electrical power, electrical energy,
-    // series resistance, parallel resistance, resistor divider, current divider,
-    // resistor color code, E-series resistors, capacitor series/parallel,
-    // RC time constant, capacitor charging/discharging, inductor series/parallel,
-    // RL time constant, LED resistor, LED power, battery runtime, battery energy,
-    // regulator power loss, buck converter efficiency, fuse sizing, wire voltage drop,
-    // power budget, truth tables, Boolean algebra, binary arithmetic
+    val electronicsOhmsLaw = ToolDefinition(
+        id = "electronics_ohms_law",
+        title = "Ohm's Law",
+        category = ToolCategory.ELECTRONICS,
+        description = "Calculate voltage, current, resistance",
+        iconName = "ic_category_electronics",
+        keywords = listOf("ohms law", "voltage", "current", "resistance"),
+        calculatorType = CalculatorType.CONVERTER,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
 
     // ==========================================================================
     // COMPUTER SCIENCE TOOLS
     // ==========================================================================
-    // Following the spec: binary, octal, decimal, hexadecimal, base-N,
-    // bitwise AND, bitwise OR, XOR, NOT, shifts, bit masks, two's complement,
-    // ASCII, Unicode, epoch time, timestamp conversion, RGB/HEX, CIDR,
-    // subnet calculator, network address, broadcast address, host range,
-    // wildcard mask, programming reference utilities
+    val binaryConverter = ToolDefinition(
+        id = "binary_converter",
+        title = "Binary Converter",
+        category = ToolCategory.COMPUTER_SCIENCE,
+        description = "Convert between binary, decimal, hex",
+        iconName = "ic_category_computer_science",
+        keywords = listOf("binary", "convert", "decimal", "hex"),
+        calculatorType = CalculatorType.CONVERTER,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
 
     // ==========================================================================
     // UNIT CONVERTERS
     // ==========================================================================
-    // Following the spec: Acceleration, Angle, Area, Cooking, Data Storage,
-    // Data Transfer, Energy, Force, Fuel, Length, Numeric Base, Power, Pressure,
-    // Ring Size, Roman Numerals, Shoe Size, Speed, Temperature, Time, Torque,
-    // Volume, Volumetric Flow, Weight, Density, Frequency, Charge, Voltage,
-    // Resistance, Capacitance, Inductance, Magnetic field, Magnetic flux,
-    // Concentration, Scientific units
+    val converterLength = ToolDefinition(
+        id = "converter_length",
+        title = "Length Converter",
+        category = ToolCategory.CONVERTERS,
+        description = "Convert between length units",
+        iconName = "ic_category_converters",
+        keywords = listOf("length", "convert", "cm", "inch", "m", "ft"),
+        calculatorType = CalculatorType.CONVERTER,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
+
+    val converterTemperature = ToolDefinition(
+        id = "converter_temperature",
+        title = "Temperature Converter",
+        category = ToolCategory.CONVERTERS,
+        description = "Convert between temperature units",
+        iconName = "ic_category_converters",
+        keywords = listOf("temperature", "convert", "celsius", "fahrenheit", "kelvin"),
+        calculatorType = CalculatorType.CONVERTER,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
 
     // ==========================================================================
     // FINANCE TOOLS
     // ==========================================================================
-    // Following the spec: Currency converter, Unit price, Sales tax, GST, Tip,
-    // Bill split, Discount, Profit, Loss, Markup, Margin, Loan payment, EMI,
-    // Loan tenure, Interest, Simple interest, Compound interest, Amortization,
-    // Prepayment, ROI, CAGR, SIP, Lump sum investment, Future value,
-    // Present value, Inflation calculator, FD, RD
+    val financeCurrencyConverter = ToolDefinition(
+        id = "finance_currency_converter",
+        title = "Currency Converter",
+        category = ToolCategory.FINANCE,
+        description = "Convert between currencies",
+        iconName = "ic_category_finance",
+        keywords = listOf("currency", "convert"),
+        calculatorType = CalculatorType.CONVERTER,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
+
+    val financeEMI = ToolDefinition(
+        id = "finance_emi",
+        title = "EMI Calculator",
+        category = ToolCategory.FINANCE,
+        description = "Calculate equated monthly installment",
+        iconName = "ic_category_finance",
+        keywords = listOf("emi", "loan", "monthly", "payment"),
+        calculatorType = CalculatorType.CONVERTER,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
 
     // ==========================================================================
     // HEALTH TOOLS
     // ==========================================================================
-    // Following the spec: BMI, BMR, TDEE, Calorie burn estimate, Body fat,
-    // Macro calculator, Protein estimate, Water intake estimate, Pace, Running pace
+    val healthBMI = ToolDefinition(
+        id = "health_bmi",
+        title = "BMI Calculator",
+        category = ToolCategory.HEALTH,
+        description = "Calculate Body Mass Index",
+        iconName = "ic_category_health",
+        keywords = listOf("bmi", "body mass index"),
+        calculatorType = CalculatorType.CONVERTER,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
 
     // ==========================================================================
     // DATE & TIME TOOLS
     // ==========================================================================
-    // Following the spec: Age, Add date, Subtract date, Date difference,
-    // Time interval, Business days, Week number, Day of year, Leap year,
-    // Unix timestamp, Epoch conversion, Time zones
+    val datetimeAge = ToolDefinition(
+        id = "datetime_age",
+        title = "Age Calculator",
+        category = ToolCategory.DATETIME,
+        description = "Calculate age from date of birth",
+        iconName = "ic_category_datetime",
+        keywords = listOf("age", "birthday", "calculate age"),
+        calculatorType = CalculatorType.CONVERTER,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
 
     // ==========================================================================
     // EVERYDAY TOOLS
     // ==========================================================================
-    // Following the spec: Mileage, Fuel cost, Trip cost, Fuel required, Bill split,
-    // Recipe scaling, Paint estimator, Tile estimator, Room area, Room volume
+    val everydayMileage = ToolDefinition(
+        id = "everyday_mileage",
+        title = "Mileage Calculator",
+        category = ToolCategory.EVERYDAY,
+        description = "Calculate fuel cost, mileage",
+        iconName = "ic_category_everyday",
+        keywords = listOf("mileage", "fuel", "cost"),
+        calculatorType = CalculatorType.CONVERTER,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
 
     // ==========================================================================
     // SHOPPING TOOLS
     // ==========================================================================
-    // Following the spec: Shopping list with items (name, price, quantity,
-    // included/excluded), subtotal, discount, tax/GST, final total, budget,
-    // remaining amount, save shopping list, rename list, duplicate list,
-    // delete list, share list
+    val shoppingListCalculator = ToolDefinition(
+        id = "shopping_list",
+        title = "Shopping List",
+        category = ToolCategory.SHOPPING,
+        description = "Calculate subtotal, tax, total for shopping items",
+        iconName = "ic_category_shopping",
+        keywords = listOf("shopping", "list", "subtotal", "tax", "total"),
+        calculatorType = CalculatorType.CONVERTER,
+        supportsFavorite = true,
+        supportsHistory = true
+    )
 
     // ==========================================================================
     // ALL TOOLS COLLECTION (ordered by category then order)
     // ==========================================================================
+    @get:Suppress("UNCHECKED_CAST")
     @get:Serializable
     private val _allTools = listOf(
-        // Algebra tools (first 4 shown, rest follow pattern)
+        // Algebra tools
         percentage,
         percentageChange,
         percentageDifference,
         average,
-        // ... more algebra tools would be added
-        
-        // Statistics tools (first few shown)
-        // statisticsMean,
-        // statisticsMedian,
-        // etc.
-        
-        // Geometry tools (first few shown)
-        // geometrySquare,
-        // geometryRectangle,
-        // etc.
-        
+        weightedAverage,
+        ratio,
+        proportion,
+        // Statistics tools
+        statisticsMean,
+        statisticsMedian,
+        statisticsMode,
+        statisticsRange,
+        statisticsVariance,
+        statisticsStdDeviation,
+        // Geometry tools
+        geometrySquare,
+        geometryRectangle,
+        geometryTriangle,
         // Trigonometry tools
-        // trigonometrySin,
-        // trigonometryCos,
-        // etc.
-        
+        trigonometrySin,
+        trigonometryCos,
+        trigonometryTan,
         // Calculus tools
-        // calculusDerivative,
-        // calculusIntegration,
-        // etc.
-        
-        // Physics tools (first few shown)
-        // physicsSpeed,
-        // physicsForce,
-        // etc.
-        
-        // Chemistry tools (first few shown)
-        // chemistryMolarMass,
-        // chemistryMoleCalculator,
-        // etc.
-        
-        // Electronics tools (first few shown)
-        // electronicsOhmsLaw,
-        // electricalPower,
-        // etc.
-        
-        // Computer science tools (first few shown)
-        // binaryConverter,
-        // octalConverter,
-        // etc.
-        
-        // Unit converters (first few shown)
-        // converterLength,
-        // converterTemperature,
-        // etc.
-        
-        // Finance tools (first few shown)
-        // financeCurrencyConverter,
-        // financeEMI,
-        // etc.
-        
-        // Health tools (first few shown)
-        // healthBMI,
-        // healthBMR,
-        // etc.
-        
-        // Date & time tools (first few shown)
-        // datetimeAge,
-        // datetimeDateDifference,
-        // etc.
-        
-        // Everyday tools (first few shown)
-        // everydayMileage,
-        // everydayFuelCost,
-        // etc.
-        
+        calculusDerivative,
+        // Physics tools
+        physicsSpeed,
+        physicsForce,
+        // Chemistry tools
+        chemistryMolarMass,
+        // Electronics tools
+        electronicsOhmsLaw,
+        // Computer science tools
+        binaryConverter,
+        // Unit converters
+        converterLength,
+        converterTemperature,
+        // Finance tools
+        financeCurrencyConverter,
+        financeEMI,
+        // Health tools
+        healthBMI,
+        // Date & time tools
+        datetimeAge,
+        // Everyday tools
+        everydayMileage,
         // Shopping tools
-        // shoppingListCalculator,
-        // shoppingBillSplit,
-        // etc.
+        shoppingListCalculator
     ).sortedBy { (tool) -> (tool.category.order, tool.order) }
 
     /** Get all tools in category order */
@@ -309,7 +553,7 @@ object ToolRegistry {
     @get:Suppress("UNCHECKED_CAST")
     @get:Serializable
     fun getTools(category: ToolCategory): List<ToolDefinition> {
-        return _allTools.filter { $0.category == category }
+        return _allTools.filter { it.category == category }
     }
 
     /** Search tools by query */
@@ -336,38 +580,6 @@ object ToolRegistry {
     /** Get recent tools */
     @get:Suppress("UNCHECKED_CAST")
     fun getRecent(recentIds: List<String>): List<ToolDefinition> {
-        return recentIds.mapNotNull { getTool(it) }?.distinctBy { $0.id } ?: emptyList()
+        return recentIds.mapNotNull { getTool(it) }?.distinctBy { it.id } ?: emptyList()
     }
 }
-
-/**
- * ToolCategory with display info and ordering
- */
-@Serializable
-enum class ToolCategory(val displayName: String, val order: Int) {
-    ALGEBRA(1),
-    STATISTICS(2),
-    GEOMETRY(3),
-    TRIGONOMETRY(4),
-    CALCULUS(5),
-    PHYSICS(6),
-    CHEMISTRY(7),
-    ELECTRONICS(8),
-    COMPUTER_SCIENCE(9),
-    CONVERTERS(10),
-    FINANCE(11),
-    HEALTH(12),
-    DATETIME(13),
-    EVERYDAY(14),
-    SHOPPING(15);
-
-    companion object {
-        fun allCategories(): List<ToolCategory> = values().sortedBy { it.order }
-    }
-}
-
-/**
- * Search extension for ToolDefinition
- */
-private fun ToolDefinition.searchTerms: List<String>
-    get() = listOf(title, category.displayName) + keywords + aliases
