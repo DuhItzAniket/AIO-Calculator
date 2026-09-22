@@ -66,7 +66,7 @@ inline fun <T> rememberMutableState(initialValue: T): MutableState<T> = remember
 fun String?.isNullOrBlank(): Boolean = this == null || this.isBlank()
 
 // Safe list operations
-fun <T> List<T>.firstOrNull(predicate: (T) -> Boolean): T? = firstOrNull { predicate(it) }
+fun <T> List<T>.firstOrNull(predicate: (T) -> Boolean): T? = this.find(predicate)
 
 // Time formatting
 fun Long.formatDuration(): String {

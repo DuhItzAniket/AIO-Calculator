@@ -143,3 +143,10 @@ Status: complete; commit/push pending final repository checks.
 - Verification command: `./gradlew.bat --no-daemon --max-workers=1 --console=plain :app:assembleDebug :feature:calculator:testDebugUnitTest :core:math:testDebugUnitTest`
 - Result: `BUILD SUCCESSFUL`; feature unit tests are currently `NO-SOURCE`, and core math tests pass.
 - Known environment limitation: no emulator/device is attached for runtime rotation, foldable, or screen-reader checks.
+
+## Checkpoint 14 verification — reliability
+
+- Added pure shopping-total unit tests and ToolRegistry unit tests.
+- Fixed recursive `List.firstOrNull(predicate)` implementation in `core/common`, which had caused a `StackOverflowError` in tool search.
+- Verification command: `./gradlew.bat --no-daemon --max-workers=1 --console=plain :app:testDebugUnitTest :core:common:testDebugUnitTest :core:math:testDebugUnitTest :core:units:testDebugUnitTest :core:currency:testDebugUnitTest :app:assembleDebug`
+- Result: `BUILD SUCCESSFUL` (300 actionable tasks).

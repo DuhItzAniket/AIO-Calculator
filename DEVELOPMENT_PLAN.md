@@ -20,7 +20,7 @@ This is the implementation ledger for the production app. A checkpoint is comple
 | 11 | Shopping | Shopping lists, totals, tax/discount/budget, persistence and sharing | Complete |
 | 12 | Formula/constants libraries | Searchable libraries connected to tools and centralized data | Complete |
 | 13 | Settings and adaptive UI | Theme modes, dynamic color, accessibility, landscape/tablet/foldable layouts | Complete |
-| 14 | Reliability | Repository/ViewModel/UI tests, error/empty states, rotation/state restoration | Not started |
+| 14 | Reliability | Repository/ViewModel/UI tests, error/empty states, rotation/state restoration | Complete |
 | 15 | Release hardening | Release build, R8/resource shrinking, size measurement, baseline profile and docs | Not started |
 
 ## Verification loop
@@ -45,6 +45,16 @@ For every checkpoint:
 - Resolved toolchain blocker: the repository now uses AGP 8.6.1/Kotlin 1.9.24/KSP 1.9.24-1.0.20 with Gradle 8.7.
 - Resolved structural gap: the feature calculator module is included and the debug APK builds.
 - Checkpoint 1 evidence: all declared modules compile, `:core:math:testDebugUnitTest` passes, and `:app:assembleDebug` passes.
+
+## Checkpoint 14 — reliability
+
+Status: complete; committed and pushed after verification.
+
+- Added pure shopping-total logic with tests for included items, discount, tax, negative-rate clamping, and final totals.
+- Added ToolRegistry tests covering keyword search, unknown IDs, favorites, and recent-item deduplication.
+- Fixed a production `List.firstOrNull(predicate)` extension that recursively called itself and caused `StackOverflowError` during tool search.
+- Verified app, common, math, units, and currency unit tests plus `:app:assembleDebug`: `BUILD SUCCESSFUL` (300 actionable tasks).
+- Device-only rotation, UI, and screen-reader checks remain explicitly documented as unavailable because no emulator/device is attached.
 
 ## Checkpoint 11 — shopping lists
 

@@ -58,6 +58,7 @@ import com.aio.calculator.feature.calculator.BasicCalculatorScreen
 import com.aio.calculator.feature.calculator.ScientificCalculatorScreen
 import com.aio.calculator.history.AppHistoryViewModel
 import com.aio.calculator.shopping.AppShoppingViewModel
+import com.aio.calculator.shopping.ShoppingTotalsCalculator
 import com.aio.calculator.ui.theme.ThemeViewModel
 import com.aio.calculator.ui.theme.ThemeUiState
 import com.aio.calculator.data.AppFavoritesViewModel
@@ -632,10 +633,11 @@ private fun ShoppingScreen(viewModel: AppShoppingViewModel, onOpenDrawer: () -> 
         }
     }
     val selectedList = lists.firstOrNull { it.id == selectedListId }
-    val subtotal = items.sumOf { it.price * it.quantity }
-    val discountAmount = subtotal * (discount.toDoubleOrNull()?.coerceAtLeast(0.0) ?: 0.0) / 100.0
-    val taxAmount = subtotal * (taxRate.toDoubleOrNull()?.coerceAtLeast(0.0) ?: 0.0) / 100.0
-    val total = subtotal - discountAmount + taxAmount
+    val totals = ShoppingTotalsCalculator.calculate(
+        items = items,
+        discountPercent = discount.toDoubleOrNull() ?: 0.0,
+        taxRatePercent = taxRate.toDoubleOrNull() ?: 0.0,
+    )
 
     Scaffold(topBar = {
         TopAppBar(title = { Text("Shopping list") }, navigationIcon = { Button(onClick = onOpenDrawer) { Text("Menu") } })
@@ -671,15 +673,15 @@ private fun ShoppingScreen(viewModel: AppShoppingViewModel, onOpenDrawer: () -> 
                     },
                     modifier = Modifier.padding(top = 8.dp),
                 ) { Text("Save totals") }
-                Text("Subtotal: ${formatToolNumber(subtotal)}", modifier = Modifier.padding(top = 12.dp))
-                Text("Total: ${formatToolNumber(total)}", modifier = Modifier.padding(bottom = 4.dp))
+                Text("Subtotal: ${formatToolNumber(totals.subtotal)}", modifier = Modifier.padding(top = 12.dp))
+                Text("Total: ${formatToolNumber(totals.total)}", modifier = Modifier.padding(bottom = 4.dp))
                 selectedList?.budget?.takeIf { it > 0.0 }?.let { limit ->
-                    if (total > limit) Text("Over budget by ${formatToolNumber(total - limit)}")
-                    else Text("Budget remaining: ${formatToolNumber(limit - total)}")
+                    if (totals.total > limit) Text("Over budget by ${formatToolNumber(totals.total - limit)}")
+                    else Text("Budget remaining: ${formatToolNumber(limit - totals.total)}")
                 }
                 Button(onClick = {
                     val lines = items.joinToString("\n") { "${it.name} x${it.quantity}: ${formatToolNumber(it.price * it.quantity)}" }
-                    val message = "${selectedList?.name ?: "Shopping list"}\n$lines\nTotal: ${formatToolNumber(total)}"
+                    val message = "${selectedList?.name ?: "Shopping list"}\n$lines\nTotal: ${formatToolNumber(totals.total)}"
                     context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
                         type = "text/plain"
                         putExtra(Intent.EXTRA_TEXT, message)
