@@ -55,3 +55,13 @@ Status: complete; commit/push pending final repository checks.
 - Successful calculations are recorded through an app-scoped Room-backed history view model and rendered in a reactive history screen.
 - Verified `:app:assembleDebug`: build successful.
 - No Android emulator/device was attached (`adb devices` returned no devices), so instrumentation/UI execution remains a later environment-dependent gate.
+
+## Checkpoint 4 — persistence flows
+
+Status: complete; commit/push pending final repository checks.
+
+- Added app-scoped Room view models for history, favorites, and saved calculations.
+- Added a DataStore-backed recent-tools view model with deduplication and a ten-item cap.
+- Added drawer destinations and screens for favorites, recent, and saved calculations.
+- History entries can be saved and saved entries can be deleted; favorites can be toggled.
+- Verified `:app:assembleDebug`: build successful, including Room KSP generation.

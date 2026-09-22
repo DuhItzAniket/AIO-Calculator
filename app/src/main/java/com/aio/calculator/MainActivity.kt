@@ -31,29 +31,45 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.aio.calculator.core.database.entity.CalculationHistoryEntity
+import com.aio.calculator.core.database.entity.SavedCalculationEntity
+import com.aio.calculator.core.common.ToolDefinition
 import com.aio.calculator.core.design.AioTheme
 import com.aio.calculator.core.navigation.NavRoutes
 import com.aio.calculator.feature.calculator.BasicCalculatorScreen
 import com.aio.calculator.feature.calculator.ScientificCalculatorScreen
 import com.aio.calculator.history.AppHistoryViewModel
+import com.aio.calculator.data.AppFavoritesViewModel
+import com.aio.calculator.data.AppRecentViewModel
+import com.aio.calculator.data.AppSavedViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private val historyViewModel: AppHistoryViewModel by viewModels()
+    private val favoritesViewModel: AppFavoritesViewModel by viewModels()
+    private val savedViewModel: AppSavedViewModel by viewModels()
+    private val recentViewModel: AppRecentViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { AioCalculatorApp(historyViewModel) }
+        setContent { AioCalculatorApp(historyViewModel, favoritesViewModel, savedViewModel, recentViewModel) }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AioCalculatorApp(historyViewModel: AppHistoryViewModel) {
+private fun AioCalculatorApp(
+    historyViewModel: AppHistoryViewModel,
+    favoritesViewModel: AppFavoritesViewModel,
+    savedViewModel: AppSavedViewModel,
+    recentViewModel: AppRecentViewModel,
+) {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val history by historyViewModel.history.collectAsState()
+    val favorites by favoritesViewModel.favorites.collectAsState()
+    val saved by savedViewModel.saved.collectAsState()
+    val recent by recentViewModel.recent.collectAsState()
 
     fun openDrawer() = scope.launch { drawerState.open() }
     fun navigate(route: String) {
@@ -85,6 +101,21 @@ private fun AioCalculatorApp(historyViewModel: AppHistoryViewModel) {
                         selected = false,
                         onClick = { navigate(NavRoutes.HISTORY) },
                     )
+                    NavigationDrawerItem(
+                        label = { Text("Favorites (${favorites.size})") },
+                        selected = false,
+                        onClick = { navigate(NavRoutes.FAVORITES) },
+                    )
+                    NavigationDrawerItem(
+                        label = { Text("Recent (${recent.size})") },
+                        selected = false,
+                        onClick = { navigate(NavRoutes.RECENT) },
+                    )
+                    NavigationDrawerItem(
+                        label = { Text("Saved (${saved.size})") },
+                        selected = false,
+                        onClick = { navigate(NavRoutes.SAVED) },
+                    )
                 }
             },
         ) {
@@ -94,7 +125,10 @@ private fun AioCalculatorApp(historyViewModel: AppHistoryViewModel) {
                         onNavigateToScientific = { navigate(NavRoutes.toolRoute("scientific")) },
                         onOpenDrawer = { openDrawer() },
                         onOpenHistory = { navigate(NavRoutes.HISTORY) },
-                        onCalculation = historyViewModel::record,
+                        onCalculation = { expression, result ->
+                            historyViewModel.record(expression, result)
+                            recentViewModel.add("basic_calculator")
+                        },
                     )
                 }
                 composable(NavRoutes.TOOL) {
@@ -102,7 +136,10 @@ private fun AioCalculatorApp(historyViewModel: AppHistoryViewModel) {
                         onNavigateToBasic = { navController.popBackStack() },
                         onOpenDrawer = { openDrawer() },
                         onOpenHistory = { navigate(NavRoutes.HISTORY) },
-                        onCalculation = historyViewModel::record,
+                        onCalculation = { expression, result ->
+                            historyViewModel.record(expression, result)
+                            recentViewModel.add("scientific_calculator")
+                        },
                     )
                 }
                 composable(NavRoutes.HISTORY) {
@@ -110,7 +147,17 @@ private fun AioCalculatorApp(historyViewModel: AppHistoryViewModel) {
                         items = history,
                         onOpenDrawer = { openDrawer() },
                         onClear = historyViewModel::clear,
+                        onSave = savedViewModel::save,
                     )
+                }
+                composable(NavRoutes.FAVORITES) {
+                    ToolListScreen("Favorites", favorites, { openDrawer() }, favoritesViewModel::toggle)
+                }
+                composable(NavRoutes.RECENT) {
+                    ToolListScreen("Recent", recent, { openDrawer() }, recentViewModel::add)
+                }
+                composable(NavRoutes.SAVED) {
+                    SavedScreen(saved, { openDrawer() }, savedViewModel::delete)
                 }
             }
         }
@@ -123,6 +170,7 @@ private fun HistoryScreen(
     items: List<CalculationHistoryEntity>,
     onOpenDrawer: () -> Unit,
     onClear: () -> Unit,
+    onSave: (CalculationHistoryEntity) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -141,7 +189,51 @@ private fun HistoryScreen(
                     Column(modifier = Modifier.padding(vertical = 12.dp)) {
                         Text(item.displayExpression)
                         Text("= ${item.result}")
+                        Button(onClick = { onSave(item) }) { Text("Save") }
                     }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ToolListScreen(
+    title: String,
+    tools: List<ToolDefinition>,
+    onOpenDrawer: () -> Unit,
+    onToolAction: (String) -> Unit,
+) {
+    Scaffold(topBar = {
+        TopAppBar(title = { Text(title) }, navigationIcon = { Button(onClick = onOpenDrawer) { Text("Menu") } })
+    }) { paddingValues ->
+        LazyColumn(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
+            items(tools, key = { it.id }) { tool ->
+                Button(onClick = { onToolAction(tool.id) }, modifier = Modifier.padding(vertical = 6.dp)) {
+                    Text("${tool.title}: ${tool.description}")
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SavedScreen(
+    items: List<SavedCalculationEntity>,
+    onOpenDrawer: () -> Unit,
+    onDelete: (Long) -> Unit,
+) {
+    Scaffold(topBar = {
+        TopAppBar(title = { Text("Saved calculations") }, navigationIcon = { Button(onClick = onOpenDrawer) { Text("Menu") } })
+    }) { paddingValues ->
+        LazyColumn(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
+            items(items, key = { it.id }) { item ->
+                Column(modifier = Modifier.padding(vertical = 12.dp)) {
+                    Text(item.name)
+                    Text("= ${item.result}")
+                    Button(onClick = { onDelete(item.id) }) { Text("Delete") }
                 }
             }
         }
