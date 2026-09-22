@@ -45,3 +45,13 @@ Status: complete; commit/push pending final repository checks.
 
 - Added explicit engine tests for memory, last-answer retention, invalid/non-finite input, angle modes, alternate operators, and constants.
 - Verified `:core:math:testDebugUnitTest`: 17 tests passed.
+
+## Checkpoint 3 — primary calculator UX
+
+Status: complete; commit/push pending final repository checks.
+
+- Wired basic and scientific calculator destinations through the application NavHost.
+- Added a working Material 3 drawer with Calculator, Scientific, and History destinations.
+- Successful calculations are recorded through an app-scoped Room-backed history view model and rendered in a reactive history screen.
+- Verified `:app:assembleDebug`: build successful.
+- No Android emulator/device was attached (`adb devices` returned no devices), so instrumentation/UI execution remains a later environment-dependent gate.

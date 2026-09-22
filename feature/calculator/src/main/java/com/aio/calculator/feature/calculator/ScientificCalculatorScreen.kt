@@ -9,6 +9,7 @@ fun ScientificCalculatorScreen(
     onNavigateToBasic: () -> Unit,
     onOpenDrawer: () -> Unit,
     onOpenHistory: () -> Unit,
+    onCalculation: (expression: String, result: String) -> Unit = { _, _ -> },
 ) {
     CalculatorSurface(
         title = "Scientific Calculator",
@@ -16,5 +17,6 @@ fun ScientificCalculatorScreen(
         onOpenHistory = onOpenHistory,
         extraLabels = listOf("sin(", "cos(", "tan(", "√"),
         onNavigateToOtherMode = onNavigateToBasic,
+        onCalculation = onCalculation,
     )
 }

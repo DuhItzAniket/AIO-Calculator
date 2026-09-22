@@ -9,8 +9,8 @@ This is the implementation ledger for the production app. A checkpoint is comple
 | 0 | Baseline and workflow | Development branch, reproducible toolchain, plan and ledger committed | Complete |
 | 1 | Build foundation | All modules included, dependency graph resolves, debug build passes | Complete |
 | 2 | Core calculator engine | Safe expression evaluation, formatting, validation, comprehensive unit tests | Complete |
-| 3 | Primary calculator UX | Basic/scientific calculator wired into navigation and usable on phone/tablet layouts | In progress |
-| 4 | Persistence | Room history/favorites/saved/recent flows are wired and tested | Not started |
+| 3 | Primary calculator UX | Basic/scientific calculator wired into navigation and usable on phone/tablet layouts | Complete |
+| 4 | Persistence | Room history/favorites/saved/recent flows are wired and tested | In progress |
 | 5 | Navigation and discovery | Drawer, categories, tool registry, search, favorites and recent screens work | Not started |
 | 6 | Reusable specialist tools | Shared form/result/error components and first algebra/statistics/geometry tools | Not started |
 | 7 | Science and engineering | Trigonometry, physics, chemistry and electronics tools with formula tests | Not started |

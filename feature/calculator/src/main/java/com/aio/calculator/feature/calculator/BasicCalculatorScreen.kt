@@ -35,8 +35,9 @@ fun BasicCalculatorScreen(
     onNavigateToScientific: () -> Unit,
     onOpenDrawer: () -> Unit,
     onOpenHistory: () -> Unit,
+    onCalculation: (expression: String, result: String) -> Unit = { _, _ -> },
 ) {
-    CalculatorSurface("Calculator", onOpenDrawer, onOpenHistory, listOf("√", "π"), onNavigateToScientific)
+    CalculatorSurface("Calculator", onOpenDrawer, onOpenHistory, listOf("√", "π"), onNavigateToScientific, onCalculation)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,6 +48,7 @@ internal fun CalculatorSurface(
     onOpenHistory: () -> Unit,
     extraLabels: List<String>,
     onNavigateToOtherMode: () -> Unit,
+    onCalculation: (expression: String, result: String) -> Unit,
 ) {
     val engine = remember { CalculatorEngine() }
     val colors = CalculatorColors()
@@ -59,9 +61,11 @@ internal fun CalculatorSurface(
     }
     fun evaluate() {
         if (expression.isBlank()) return
+        val input = expression
         engine.evaluate(expression).onSuccess { value ->
             display = formatResult(value)
             expression = display
+            onCalculation(input, display)
         }.onFailure { display = "Error" }
     }
 
