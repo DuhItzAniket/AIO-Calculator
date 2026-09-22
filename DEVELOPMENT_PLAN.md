@@ -21,7 +21,7 @@ This is the implementation ledger for the production app. A checkpoint is comple
 | 12 | Formula/constants libraries | Searchable libraries connected to tools and centralized data | Complete |
 | 13 | Settings and adaptive UI | Theme modes, dynamic color, accessibility, landscape/tablet/foldable layouts | Complete |
 | 14 | Reliability | Repository/ViewModel/UI tests, error/empty states, rotation/state restoration | Complete |
-| 15 | Release hardening | Release build, R8/resource shrinking, size measurement, baseline profile and docs | Not started |
+| 15 | Release hardening | Release build, R8/resource shrinking, size measurement, baseline profile and docs | Complete |
 
 ## Verification loop
 
@@ -55,6 +55,16 @@ Status: complete; committed and pushed after verification.
 - Fixed a production `List.firstOrNull(predicate)` extension that recursively called itself and caused `StackOverflowError` during tool search.
 - Verified app, common, math, units, and currency unit tests plus `:app:assembleDebug`: `BUILD SUCCESSFUL` (300 actionable tasks).
 - Device-only rotation, UI, and screen-reader checks remain explicitly documented as unavailable because no emulator/device is attached.
+
+## Checkpoint 15 — release hardening
+
+Status: complete; committed and pushed after verification.
+
+- Fixed invalid full-backup exclusions that failed release lint.
+- Added a 4 GB Gradle JVM cap for predictable R8 execution; release minification and resource shrinking remain enabled.
+- Verified `:app:assembleRelease`: `BUILD SUCCESSFUL` with R8 and resource shrinking.
+- Measured unsigned release APK: 2,193,209 bytes (~2.09 MB); SHA-256 `B8FB590A85703B5678E0F6EDDF7114CF60E5303FA1A4311BB8CC3C202701BA6D`.
+- The artifact is unsigned and requires the project/release signing configuration before store distribution.
 
 ## Checkpoint 11 — shopping lists
 

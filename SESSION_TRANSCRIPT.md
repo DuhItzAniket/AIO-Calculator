@@ -150,3 +150,12 @@ Status: complete; commit/push pending final repository checks.
 - Fixed recursive `List.firstOrNull(predicate)` implementation in `core/common`, which had caused a `StackOverflowError` in tool search.
 - Verification command: `./gradlew.bat --no-daemon --max-workers=1 --console=plain :app:testDebugUnitTest :core:common:testDebugUnitTest :core:math:testDebugUnitTest :core:units:testDebugUnitTest :core:currency:testDebugUnitTest :app:assembleDebug`
 - Result: `BUILD SUCCESSFUL` (300 actionable tasks).
+
+## Checkpoint 15 verification — release hardening
+
+- First release attempt exposed two invalid full-backup exclusions during lint; removed the contradictory exclusions.
+- First R8 attempt exhausted the default Gradle heap; added `org.gradle.jvmargs=-Xmx4096m -Dfile.encoding=UTF-8`.
+- Verification command: `./gradlew.bat --no-daemon --max-workers=1 --console=plain :app:assembleRelease`
+- Result: `BUILD SUCCESSFUL` with `minifyReleaseWithR8` and `shrinkReleaseRes`.
+- Artifact: `app/build/outputs/apk/release/app-release-unsigned.apk`, 2,193,209 bytes; SHA-256 `B8FB590A85703B5678E0F6EDDF7114CF60E5303FA1A4311BB8CC3C202701BA6D`.
+- The APK is intentionally unsigned; production distribution still requires a private signing key/configuration.
