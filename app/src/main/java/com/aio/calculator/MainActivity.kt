@@ -16,6 +16,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -23,15 +24,18 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.aio.calculator.core.database.entity.CalculationHistoryEntity
 import com.aio.calculator.core.database.entity.SavedCalculationEntity
+import com.aio.calculator.core.common.ToolRegistry
 import com.aio.calculator.core.common.ToolDefinition
 import com.aio.calculator.core.design.AioTheme
 import com.aio.calculator.core.navigation.NavRoutes
@@ -116,6 +120,11 @@ private fun AioCalculatorApp(
                         selected = false,
                         onClick = { navigate(NavRoutes.SAVED) },
                     )
+                    NavigationDrawerItem(
+                        label = { Text("Tools") },
+                        selected = false,
+                        onClick = { navigate(NavRoutes.TOOLS) },
+                    )
                 }
             },
         ) {
@@ -132,15 +141,20 @@ private fun AioCalculatorApp(
                     )
                 }
                 composable(NavRoutes.TOOL) {
-                    ScientificCalculatorScreen(
-                        onNavigateToBasic = { navController.popBackStack() },
-                        onOpenDrawer = { openDrawer() },
-                        onOpenHistory = { navigate(NavRoutes.HISTORY) },
-                        onCalculation = { expression, result ->
-                            historyViewModel.record(expression, result)
-                            recentViewModel.add("scientific_calculator")
-                        },
-                    )
+                    val toolId = it.arguments?.getString("toolId")
+                    if (toolId == "scientific") {
+                        ScientificCalculatorScreen(
+                            onNavigateToBasic = { navController.popBackStack() },
+                            onOpenDrawer = { openDrawer() },
+                            onOpenHistory = { navigate(NavRoutes.HISTORY) },
+                            onCalculation = { expression, result ->
+                                historyViewModel.record(expression, result)
+                                recentViewModel.add("scientific_calculator")
+                            },
+                        )
+                    } else {
+                        ToolDetailScreen(ToolRegistry.getTool(toolId.orEmpty()), { openDrawer() }, favoritesViewModel::toggle)
+                    }
                 }
                 composable(NavRoutes.HISTORY) {
                     HistoryScreen(
@@ -158,6 +172,9 @@ private fun AioCalculatorApp(
                 }
                 composable(NavRoutes.SAVED) {
                     SavedScreen(saved, { openDrawer() }, savedViewModel::delete)
+                }
+                composable(NavRoutes.TOOLS) {
+                    ToolsScreen({ openDrawer() }) { toolId -> navigate(NavRoutes.toolRoute(toolId)) }
                 }
             }
         }
@@ -234,6 +251,60 @@ private fun SavedScreen(
                     Text(item.name)
                     Text("= ${item.result}")
                     Button(onClick = { onDelete(item.id) }) { Text("Delete") }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ToolsScreen(
+    onOpenDrawer: () -> Unit,
+    onOpenTool: (String) -> Unit,
+) {
+    var query by remember { mutableStateOf("") }
+    val tools = ToolRegistry.search(query)
+    Scaffold(topBar = {
+        TopAppBar(title = { Text("All tools") }, navigationIcon = { Button(onClick = onOpenDrawer) { Text("Menu") } })
+    }) { paddingValues ->
+        Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                modifier = Modifier.padding(vertical = 12.dp),
+                label = { Text("Search tools") },
+                singleLine = true,
+            )
+            LazyColumn {
+                items(tools, key = { it.id }) { tool ->
+                    Button(onClick = { onOpenTool(tool.id) }, modifier = Modifier.padding(vertical = 4.dp)) {
+                        Text("${tool.title} · ${tool.category.displayName}")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ToolDetailScreen(
+    tool: ToolDefinition?,
+    onOpenDrawer: () -> Unit,
+    onToggleFavorite: (String) -> Unit,
+) {
+    Scaffold(topBar = {
+        TopAppBar(title = { Text(tool?.title ?: "Tool") }, navigationIcon = { Button(onClick = onOpenDrawer) { Text("Menu") } })
+    }) { paddingValues ->
+        Column(modifier = Modifier.padding(paddingValues).padding(24.dp)) {
+            if (tool == null) {
+                Text("This tool is not available yet.")
+            } else {
+                Text(tool.description)
+                Text("Category: ${tool.category.displayName}", modifier = Modifier.padding(top = 8.dp))
+                Button(onClick = { onToggleFavorite(tool.id) }, modifier = Modifier.padding(top = 16.dp)) {
+                    Text("Toggle favorite")
                 }
             }
         }

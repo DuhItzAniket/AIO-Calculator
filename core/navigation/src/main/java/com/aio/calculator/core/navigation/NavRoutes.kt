@@ -14,6 +14,7 @@ object NavRoutes {
     const val FORMULA_LIBRARY = "formula_library"
     const val CONSTANTS_LIBRARY = "constants_library"
     const val SHOPPING = "shopping"
+    const val TOOLS = "tools"
 
     fun categoryRoute(category: String): String = "category/$category"
 

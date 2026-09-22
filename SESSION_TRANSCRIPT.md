@@ -65,3 +65,12 @@ Status: complete; commit/push pending final repository checks.
 - Added drawer destinations and screens for favorites, recent, and saved calculations.
 - History entries can be saved and saved entries can be deleted; favorites can be toggled.
 - Verified `:app:assembleDebug`: build successful, including Room KSP generation.
+
+## Checkpoint 5 — navigation and discovery
+
+Status: complete; commit/push pending final repository checks.
+
+- Exposed the centralized `ToolRegistry` through a searchable Tools destination.
+- Added tool-detail routing for registered tools and preserved the dedicated scientific calculator route.
+- Drawer now reaches calculator modes, history, favorites, recent, saved, and all tools.
+- Verified `:app:assembleDebug`: build successful.
