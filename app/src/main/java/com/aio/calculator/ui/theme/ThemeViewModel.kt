@@ -1,84 +1,29 @@
 package com.aio.calculator.ui.theme
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.aio.calculator.core.common.AngleMode
+import com.aio.calculator.core.common.DecimalPrecision
 import com.aio.calculator.core.common.ThemeMode
-import com.aio.calculator.core.datastore.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.update
 
-class ThemeViewModel(
-    private val settingsRepository: SettingsRepository
-) : ViewModel() {
-
+/** Lightweight settings state holder for the application UI. */
+class ThemeViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ThemeUiState())
     val uiState: StateFlow<ThemeUiState> = _uiState
 
-    init {
-        loadSettings()
-    }
-
-    private fun loadSettings() {
-        viewModelScope.launch {
-            val themeMode = settingsRepository.getThemeMode()
-            val angleMode = settingsRepository.getAngleMode()
-            val precision = settingsRepository.getDecimalPrecision()
-            val currency = settingsRepository.getDefaultCurrency()
-            val autoUpdate = settingsRepository.getAutoUpdateRates()
-
-            _uiState.update {
-                it.copy(
-                    themeMode = themeMode,
-                    angleMode = angleMode,
-                    decimalPrecision = precision,
-                    defaultCurrency = currency,
-                    autoUpdateRates = autoUpdate
-                )
-            }
-        }
-    }
-
-    fun setThemeMode(themeMode: ThemeMode) {
-        viewModelScope.launch {
-            settingsRepository.setThemeMode(themeMode)
-            _uiState.update { it.copy(themeMode = themeMode) }
-        }
-    }
-
-    fun setAngleMode(angleMode: AngleMode) {
-        viewModelScope.launch {
-            settingsRepository.setAngleMode(angleMode)
-            _uiState.update { it.copy(angleMode = angleMode) }
-        }
-    }
-
-    fun setDecimalPrecision(precision: com.aio.calculator.core.common.DecimalPrecision) {
-        viewModelScope.launch {
-            settingsRepository.setDecimalPrecision(precision)
-            _uiState.update { it.copy(decimalPrecision = precision) }
-        }
-    }
-
-    fun setDefaultCurrency(currency: String) {
-        viewModelScope.launch {
-            settingsRepository.setDefaultCurrency(currency)
-            _uiState.update { it.copy(defaultCurrency = currency) }
-        }
-    }
-
-    fun setAutoUpdateRates(enabled: Boolean) {
-        viewModelScope.launch {
-            settingsRepository.setAutoUpdateRates(enabled)
-            _uiState.update { it.copy(autoUpdateRates = enabled) }
-        }
-    }
+    fun setThemeMode(value: ThemeMode) = _uiState.update { it.copy(themeMode = value) }
+    fun setAngleMode(value: AngleMode) = _uiState.update { it.copy(angleMode = value) }
+    fun setDecimalPrecision(value: DecimalPrecision) = _uiState.update { it.copy(decimalPrecision = value) }
+    fun setDefaultCurrency(value: String) = _uiState.update { it.copy(defaultCurrency = value) }
+    fun setAutoUpdateRates(value: Boolean) = _uiState.update { it.copy(autoUpdateRates = value) }
 }
 
 data class ThemeUiState(
     val themeMode: ThemeMode = ThemeMode.SYSTEM_DEFAULT,
     val angleMode: AngleMode = AngleMode.DEGREES,
-    val decimalPrecision: com.aio.calculator.core.common.DecimalPrecision = com.aio.calculator.core.common.DecimalPrecision.AUTO,
+    val decimalPrecision: DecimalPrecision = DecimalPrecision.AUTO,
     val defaultCurrency: String = "USD",
-    val autoUpdateRates: Boolean = true
+    val autoUpdateRates: Boolean = true,
 )

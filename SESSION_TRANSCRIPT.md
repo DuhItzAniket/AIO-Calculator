@@ -1,109 +1,47 @@
-# AIO Calculator - Development Session Transcript
+# Development transcript
 
-## Project Overview
-Building a production-quality Android calculator app (All-in-One Calculator) with:
-- Basic & Scientific calculator
-- 15+ categories of specialized calculators
-- Offline-first architecture
-- Material 3 design system
-- Navigation drawer with categories
-- History, Favorites, Recent, Saved calculations
+## Checkpoint 0 — baseline and workflow
 
-## Checkpoints Completed
+- Branch: `opencode/aio-calculator`
+- Starting repository commit: `b28705d`
+- Baseline plan committed and pushed as `7a1a8f2`.
+- The repository was missing the feature module include, a usable app dependency graph, and a reproducible Java/Gradle combination.
 
-### CHECKPOINT 0: Repository Inspection ✅
-- Cloned empty GitHub repo: https://github.com/DuhItzAniket/AIO-Calculator.git
-- Mapped requirements from AIOSPEC.md
+## Checkpoint 1 — build foundation and calculator slice
 
-### CHECKPOINT 1: Android Project Foundation ✅
-- Multi-module Gradle setup (app + 11 core modules + feature modules)
-- compileSdk=36, targetSdk=36, minSdk=26
-- Kotlin 2.0.21, Compose BOM 2024.10.00
-- Dependencies: Room, DataStore, Navigation, Retrofit, OkHttp, Coroutines, exp4j
-- R8/minification enabled for release
+Status: complete; commit/push pending final repository checks.
 
-### CHECKPOINT 2: Design System & Theme ✅
-- Custom color palette (Blue/Teal primary)
-- Light, Dark, OLED Black, System Default, Dynamic Color themes
-- Typography system with calculator-specific styles
-- Shape system (rounded corners)
-- 15 custom category icons (vector drawables)
+Implemented:
 
-### CHECKPOINT 3: Navigation Drawer ✅
-- ModalNavigationDrawer with categories, utility, settings sections
-- NavHost with routes for calculator, categories, tools, favorites, history, saved, shopping, formula library, constants library
-- Adaptive navigation structure
+- Pinned a compatible AGP/Kotlin/KSP/Gradle toolchain and repaired module configuration.
+- Included the calculator feature in the settings and app dependency graph.
+- Replaced corrupted common, datastore, navigation, math, app shell, and calculator-screen code with compiling implementations.
+- Added a shared expression evaluator supporting arithmetic, constants, common scientific functions, angle modes, and memory operations.
+- Added repository hygiene and source-of-truth documentation.
 
-### CHECKPOINT 4: Calculator Engine ✅
-- ExpressionEvaluator using exp4j (safe, deterministic, no eval())
-- Supports: arithmetic, parentheses, exponents, trig (deg/rad), hyperbolic, log, factorial, constants (pi, e, phi)
-- CalculatorEngine with memory (M+, M-, MR, MC) and last answer (ANS)
-- Comprehensive unit tests
+Verification evidence:
 
-### CHECKPOINT 5: Basic Calculator ✅
-- Full button grid (0-9, operators, functions, memory)
-- Real-time expression display
-- Cursor editing, delete, clear
-- Memory operations
-- Result formatting (removes trailing zeros)
+```text
+JAVA_HOME=C:\Program Files\Android\Android Studio\jbr
+GRADLE_USER_HOME=C:\tmp\aio-gradle87
+./gradlew.bat --no-daemon --max-workers=1 --console=plain :feature:calculator:compileDebugKotlin
+BUILD SUCCESSFUL
 
-### CHECKPOINT 6: Scientific Calculator ✅
-- Extended button grid (sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, ln, log, x², xʸ, √, 1/x, !, %, π, e)
-- Angle mode toggle (DEG/RAD) in toolbar
-- ANS button for result reuse
+./gradlew.bat --no-daemon --max-workers=1 --console=plain :core:units:compileDebugKotlin :core:formula:compileDebugKotlin :core:network:compileDebugKotlin :core:currency:compileDebugKotlin :core:formatting:compileDebugKotlin
+BUILD SUCCESSFUL
 
-### CHECKPOINT 7: History/Favorites/Recent/Saved ✅
-- Room database with entities: CalculationHistory, Favorite, SavedCalculation, ShoppingList, ShoppingItem
-- DAOs with Flow-based reactive queries
-- ViewModels: HistoryViewModel, FavoritesViewModel, RecentViewModel, SavedCalculationsViewModel
-- DataStore persistence for recent tools list
+./gradlew.bat --no-daemon --max-workers=1 --console=plain :core:math:testDebugUnitTest
+BUILD SUCCESSFUL (12 tests)
 
-### CHECKPOINT 8: Tool Registry/Search (IN PROGRESS)
-- ToolDefinition with id, title, category, description, icon, keywords, aliases, calculatorType
-- ToolRegistry singleton for centralized tool metadata
-- Search across title, category, keywords, aliases
-
-## Architecture
-```
-app/
-  core/
-    common/       - Result, ToolDefinition, Constants, Extensions
-    design/       - Colors, Typography, Shapes, Theme, Icons
-    navigation/   - NavRoutes, DrawerNavigation
-    math/         - ExpressionEvaluator, CalculatorEngine, ScientificConstants
-    units/        - (pending)
-    formula/      - (pending)
-    database/     - Room DB, Entities, DAOs
-    datastore/    - SettingsRepository
-    network/      - (pending)
-    currency/     - (pending)
-    formatting/   - (pending)
-  feature/
-    calculator/   - Basic/Scientific screens, ViewModels
-    algebra/      - (pending)
-    ...           - 14 more feature modules
+./gradlew.bat --no-daemon --max-workers=1 --console=plain :app:assembleDebug
+BUILD SUCCESSFUL
 ```
 
-## Git Status
-- Committed: 5d1fae9 "feat(core): establish project foundation..."
-- Pushed to: https://github.com/DuhItzAniket/AIO-Calculator.git (main branch)
+Known non-blocking warning: AGP 8.6.1 warns that compileSdk 36 is newer than its tested compileSdk 35 range. This is recorded for release-hardening follow-up.
 
-## Next Steps
-1. Complete Tool Registry with all 100+ tool definitions
-2. Implement Search UI
-3. Build Mathematics tools (Algebra, Statistics)
-4. Build Geometry/Trigonometry tools
-5. Build Science/Engineering tools
-6. Build Converters
-7. Build Finance tools
-8. Build Health/DateTime/Everyday tools
-9. Build Shopping calculator
-10. Formula & Constants libraries
-11. Currency caching/sync
-12. Accessibility/Adaptive layouts
-13. Performance optimization
-14. Release hardening
+## Checkpoint 2 — core calculator engine
 
-## Known Issues
-- 504 Gateway Timeout from API: This is a server-side LLM API timeout, not a code issue. Occurs when model response takes too long. Mitigation: Keep responses concise, batch operations.
-- Gradle wrapper download timeout: Network-dependent, not code-related.
+Status: complete; commit/push pending final repository checks.
+
+- Added explicit engine tests for memory, last-answer retention, invalid/non-finite input, angle modes, alternate operators, and constants.
+- Verified `:core:math:testDebugUnitTest`: 17 tests passed.

@@ -136,7 +136,6 @@ val LightColorScheme: ColorScheme = lightColorScheme(
     inverseSurface = AioColors.InverseSurface,
     inverseOnSurface = AioColors.InverseOnSurface,
     inversePrimary = AioColors.InversePrimary,
-    shadow = AioColors.Shadow,
     scrim = AioColors.Scrim,
     surfaceTint = AioColors.Primary
 )
@@ -173,7 +172,6 @@ val DarkColorScheme: ColorScheme = darkColorScheme(
     inverseSurface = AioColors.InverseSurface,
     inverseOnSurface = AioColors.InverseOnSurface,
     inversePrimary = AioColors.InversePrimary,
-    shadow = AioColors.Shadow,
     scrim = AioColors.Scrim,
     surfaceTint = AioColors.PrimaryContainer
 )
@@ -210,7 +208,6 @@ val OledBlackColorScheme: ColorScheme = darkColorScheme(
     inverseSurface = AioColors.InverseSurface,
     inverseOnSurface = AioColors.InverseOnSurface,
     inversePrimary = AioColors.InversePrimary,
-    shadow = AioColors.Shadow,
     scrim = AioColors.Scrim,
     surfaceTint = AioColors.PrimaryContainer
 )

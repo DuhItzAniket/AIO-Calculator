@@ -50,12 +50,10 @@ class SavedCalculationsViewModel(
             result = result,
             displayExpression = displayExpression
         )
-        return try {
-            val id = database.savedCalculationDao().insert(entity)
-            Result.success(id)
-        } catch (e: Exception) {
-            Result.failure(e)
+        viewModelScope.launch {
+            database.savedCalculationDao().insert(entity)
         }
+        return Result.success(0L)
     }
 
     fun updateSavedCalculation(
@@ -65,42 +63,35 @@ class SavedCalculationsViewModel(
         result: String,
         displayExpression: String
     ): Result<Unit> {
-        return try {
+        viewModelScope.launch {
             database.savedCalculationDao().update(
                 id, name, inputData, result, displayExpression, System.currentTimeMillis()
             )
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
         }
+        return Result.success(Unit)
     }
 
     fun deleteSavedCalculation(id: Long): Result<Unit> {
-        return try {
+        viewModelScope.launch {
             database.savedCalculationDao().delete(id)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
         }
+        return Result.success(Unit)
     }
 
     fun duplicateSavedCalculation(id: Long): Result<Long> {
-        return try {
+        viewModelScope.launch {
             val original = database.savedCalculationDao().getById(id)
             if (original != null) {
-                val newEntity = original.copy(
-                    id = 0,
-                    name = "${original.name} (Copy)",
-                    createdTimestamp = System.currentTimeMillis(),
-                    updatedTimestamp = System.currentTimeMillis()
+                database.savedCalculationDao().insert(
+                    original.copy(
+                        id = 0,
+                        name = "${original.name} (Copy)",
+                        createdTimestamp = System.currentTimeMillis(),
+                        updatedTimestamp = System.currentTimeMillis(),
+                    )
                 )
-                val newId = database.savedCalculationDao().insert(newEntity)
-                Result.success(newId)
-            } else {
-                Result.failure(Exception("Saved calculation not found"))
             }
-        } catch (e: Exception) {
-            Result.failure(e)
         }
+        return Result.success(0L)
     }
 }
