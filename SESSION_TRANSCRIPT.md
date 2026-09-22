@@ -74,3 +74,12 @@ Status: complete; commit/push pending final repository checks.
 - Added tool-detail routing for registered tools and preserved the dedicated scientific calculator route.
 - Drawer now reaches calculator modes, history, favorites, recent, saved, and all tools.
 - Verified `:app:assembleDebug`: build successful.
+
+## Checkpoint 6 — reusable specialist tools
+
+Status: complete; commit/push pending final repository checks.
+
+- Added reusable numeric input and result patterns to the tool-detail flow.
+- Implemented working percentage, mean/median, and triangle-area tools.
+- Invalid or incomplete fields leave the result empty rather than producing misleading output.
+- Verified `:app:assembleDebug`: build successful.

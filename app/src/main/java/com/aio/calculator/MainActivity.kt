@@ -301,8 +301,15 @@ private fun ToolDetailScreen(
             if (tool == null) {
                 Text("This tool is not available yet.")
             } else {
-                Text(tool.description)
-                Text("Category: ${tool.category.displayName}", modifier = Modifier.padding(top = 8.dp))
+                when (tool.id) {
+                    "percentage" -> PercentageToolContent()
+                    "statistics_mean", "statistics_median" -> StatisticsToolContent(tool.id)
+                    "geometry_triangle" -> TriangleToolContent()
+                    else -> {
+                        Text(tool.description)
+                        Text("Category: ${tool.category.displayName}", modifier = Modifier.padding(top = 8.dp))
+                    }
+                }
                 Button(onClick = { onToggleFavorite(tool.id) }, modifier = Modifier.padding(top = 16.dp)) {
                     Text("Toggle favorite")
                 }
@@ -310,3 +317,67 @@ private fun ToolDetailScreen(
         }
     }
 }
+
+@Composable
+private fun PercentageToolContent() {
+    var amount by remember { mutableStateOf("") }
+    var percent by remember { mutableStateOf("") }
+    var result by remember { mutableStateOf<Double?>(null) }
+    Text("Percentage", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall)
+    NumberField("Amount", amount) { amount = it }
+    NumberField("Percent", percent) { percent = it }
+    Button(onClick = { result = amount.toDoubleOrNull()?.let { value -> percent.toDoubleOrNull()?.let { rate -> value * rate / 100.0 } } }) {
+        Text("Calculate")
+    }
+    result?.let { Text("Result: ${formatToolNumber(it)}", modifier = Modifier.padding(top = 8.dp)) }
+}
+
+@Composable
+private fun StatisticsToolContent(toolId: String) {
+    var values by remember { mutableStateOf("") }
+    var result by remember { mutableStateOf<Double?>(null) }
+    Text(if (toolId == "statistics_mean") "Mean" else "Median", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall)
+    OutlinedTextField(
+        value = values,
+        onValueChange = { values = it },
+        label = { Text("Values separated by commas") },
+        modifier = Modifier.padding(top = 8.dp),
+    )
+    Button(onClick = {
+        val numbers = values.split(",").mapNotNull { it.trim().toDoubleOrNull() }.sorted()
+        result = if (numbers.isEmpty()) null else if (toolId == "statistics_mean") numbers.average() else {
+            val middle = numbers.size / 2
+            if (numbers.size % 2 == 1) numbers[middle] else (numbers[middle - 1] + numbers[middle]) / 2.0
+        }
+    }, modifier = Modifier.padding(top = 8.dp)) { Text("Calculate") }
+    result?.let { Text("Result: ${formatToolNumber(it)}", modifier = Modifier.padding(top = 8.dp)) }
+}
+
+@Composable
+private fun TriangleToolContent() {
+    var base by remember { mutableStateOf("") }
+    var height by remember { mutableStateOf("") }
+    var result by remember { mutableStateOf<Double?>(null) }
+    Text("Triangle area", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall)
+    NumberField("Base", base) { base = it }
+    NumberField("Height", height) { height = it }
+    Button(onClick = { result = base.toDoubleOrNull()?.let { b -> height.toDoubleOrNull()?.let { h -> b * h / 2.0 } } }) {
+        Text("Calculate")
+    }
+    result?.let { Text("Area: ${formatToolNumber(it)}", modifier = Modifier.padding(top = 8.dp)) }
+}
+
+@Composable
+private fun NumberField(label: String, value: String, onValueChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        modifier = Modifier.padding(top = 8.dp),
+        singleLine = true,
+    )
+}
+
+private fun formatToolNumber(value: Double): String =
+    if (value == value.toLong().toDouble()) value.toLong().toString()
+    else "%.6f".format(value).trimEnd('0').trimEnd('.')
