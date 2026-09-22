@@ -54,6 +54,7 @@ Status: complete; commit/push pending final repository checks.
 - Added a working Material 3 drawer with Calculator, Scientific, and History destinations.
 - Successful calculations are recorded through an app-scoped Room-backed history view model and rendered in a reactive history screen.
 - Verified `:app:assembleDebug`: build successful.
+
 - No Android emulator/device was attached (`adb devices` returned no devices), so instrumentation/UI execution remains a later environment-dependent gate.
 
 ## Checkpoint 4 — persistence flows
@@ -125,3 +126,11 @@ Status: complete; commit/push pending final repository checks.
 
 - Connected the searchable formula library and scientific constants library to the application drawer and navigation.
 - Verified `:app:assembleDebug`: build successful.
+
+## Checkpoint 11 verification — shopping
+
+- Added Room-backed shopping lists and items with list selection, item deletion, and persisted discount, tax-rate, and budget fields.
+- Added subtotal/total calculation, budget feedback, and Android text sharing for the selected list.
+- Verification command: `./gradlew.bat --no-daemon --max-workers=1 --console=plain :app:assembleDebug`
+- Result: `BUILD SUCCESSFUL` (274 actionable tasks; Room KSP completed).
+- Known environment limitation: `adb devices` reports no attached emulator/device, so the share sheet requires later manual device verification.

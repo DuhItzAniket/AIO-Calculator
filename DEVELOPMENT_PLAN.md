@@ -17,7 +17,7 @@ This is the implementation ledger for the production app. A checkpoint is comple
 | 8 | Converters | Offline unit conversion framework and representative conversion families | Complete |
 | 9 | Finance and currency | Precision-aware finance tools and cached/offline currency refresh | Complete |
 | 10 | Health/date/everyday | Informational calculators with validation and limitations | Complete |
-| 11 | Shopping | Shopping lists, totals, tax/discount/budget, persistence and sharing | In progress |
+| 11 | Shopping | Shopping lists, totals, tax/discount/budget, persistence and sharing | Complete |
 | 12 | Formula/constants libraries | Searchable libraries connected to tools and centralized data | Complete |
 | 13 | Settings and adaptive UI | Theme modes, dynamic color, accessibility, landscape/tablet/foldable layouts | In progress |
 | 14 | Reliability | Repository/ViewModel/UI tests, error/empty states, rotation/state restoration | Not started |
@@ -45,3 +45,13 @@ For every checkpoint:
 - Resolved toolchain blocker: the repository now uses AGP 8.6.1/Kotlin 1.9.24/KSP 1.9.24-1.0.20 with Gradle 8.7.
 - Resolved structural gap: the feature calculator module is included and the debug APK builds.
 - Checkpoint 1 evidence: all declared modules compile, `:core:math:testDebugUnitTest` passes, and `:app:assembleDebug` passes.
+
+## Checkpoint 11 — shopping lists
+
+Status: complete; committed and pushed after verification.
+
+- Added a Room-backed shopping-list view model with list selection, item insertion/deletion, and cascade-safe persistence.
+- Added subtotal, percentage discount, percentage tax, budget remaining/over-budget feedback, and durable per-list totals settings.
+- Added a plain-text Android share action for the selected list and calculated total.
+- Verified Room KSP and `:app:assembleDebug`: build successful.
+- No emulator/device was attached, so share-sheet execution remains an environment-dependent manual check.

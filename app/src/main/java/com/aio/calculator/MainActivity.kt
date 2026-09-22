@@ -1,12 +1,15 @@
 package com.aio.calculator
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -22,12 +25,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
@@ -50,6 +55,7 @@ import com.aio.calculator.core.navigation.NavRoutes
 import com.aio.calculator.feature.calculator.BasicCalculatorScreen
 import com.aio.calculator.feature.calculator.ScientificCalculatorScreen
 import com.aio.calculator.history.AppHistoryViewModel
+import com.aio.calculator.shopping.AppShoppingViewModel
 import com.aio.calculator.data.AppFavoritesViewModel
 import com.aio.calculator.data.AppRecentViewModel
 import com.aio.calculator.data.AppSavedViewModel
@@ -61,10 +67,11 @@ class MainActivity : ComponentActivity() {
     private val favoritesViewModel: AppFavoritesViewModel by viewModels()
     private val savedViewModel: AppSavedViewModel by viewModels()
     private val recentViewModel: AppRecentViewModel by viewModels()
+    private val shoppingViewModel: AppShoppingViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { AioCalculatorApp(historyViewModel, favoritesViewModel, savedViewModel, recentViewModel) }
+        setContent { AioCalculatorApp(historyViewModel, favoritesViewModel, savedViewModel, recentViewModel, shoppingViewModel) }
     }
 }
 
@@ -75,6 +82,7 @@ private fun AioCalculatorApp(
     favoritesViewModel: AppFavoritesViewModel,
     savedViewModel: AppSavedViewModel,
     recentViewModel: AppRecentViewModel,
+    shoppingViewModel: AppShoppingViewModel,
 ) {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -144,6 +152,11 @@ private fun AioCalculatorApp(
                         selected = false,
                         onClick = { navigate(NavRoutes.CONSTANTS_LIBRARY) },
                     )
+                    NavigationDrawerItem(
+                        label = { Text("Shopping") },
+                        selected = false,
+                        onClick = { navigate(NavRoutes.SHOPPING) },
+                    )
                 }
             },
         ) {
@@ -193,10 +206,15 @@ private fun AioCalculatorApp(
                     SavedScreen(saved, { openDrawer() }, savedViewModel::delete)
                 }
                 composable(NavRoutes.TOOLS) {
-                    ToolsScreen({ openDrawer() }) { toolId -> navigate(NavRoutes.toolRoute(toolId)) }
+                    ToolsScreen({ openDrawer() }) { toolId ->
+                        navigate(if (toolId == "shopping_list") NavRoutes.SHOPPING else NavRoutes.toolRoute(toolId))
+                    }
                 }
                 composable(NavRoutes.FORMULA_LIBRARY) { FormulaLibraryScreen { openDrawer() } }
                 composable(NavRoutes.CONSTANTS_LIBRARY) { ConstantsLibraryScreen { openDrawer() } }
+                composable(NavRoutes.SHOPPING) {
+                    ShoppingScreen(shoppingViewModel, { openDrawer() })
+                }
             }
         }
     }
@@ -569,6 +587,99 @@ private fun ConstantsLibraryScreen(onOpenDrawer: () -> Unit) {
                     Text(name, style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
                     Text(formatToolNumber(value))
                 }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ShoppingScreen(viewModel: AppShoppingViewModel, onOpenDrawer: () -> Unit) {
+    val context = LocalContext.current
+    val lists by viewModel.lists.collectAsState()
+    val items by viewModel.items.collectAsState()
+    val selectedListId by viewModel.selectedListId.collectAsState()
+    var listName by remember { mutableStateOf("") }
+    var itemName by remember { mutableStateOf("") }
+    var price by remember { mutableStateOf("") }
+    var quantity by remember { mutableStateOf("1") }
+    var discount by remember { mutableStateOf("") }
+    var taxRate by remember { mutableStateOf("") }
+    var budget by remember { mutableStateOf("") }
+    LaunchedEffect(lists, selectedListId) {
+        if (lists.isNotEmpty() && selectedListId == null) viewModel.selectList(lists.first().id)
+    }
+    LaunchedEffect(selectedListId, lists) {
+        lists.firstOrNull { it.id == selectedListId }?.let { list ->
+            discount = if (list.discount == 0.0) "" else formatToolNumber(list.discount)
+            taxRate = if (list.taxRate == 0.0) "" else formatToolNumber(list.taxRate)
+            budget = if (list.budget == 0.0) "" else formatToolNumber(list.budget)
+        }
+    }
+    val selectedList = lists.firstOrNull { it.id == selectedListId }
+    val subtotal = items.sumOf { it.price * it.quantity }
+    val discountAmount = subtotal * (discount.toDoubleOrNull()?.coerceAtLeast(0.0) ?: 0.0) / 100.0
+    val taxAmount = subtotal * (taxRate.toDoubleOrNull()?.coerceAtLeast(0.0) ?: 0.0) / 100.0
+    val total = subtotal - discountAmount + taxAmount
+
+    Scaffold(topBar = {
+        TopAppBar(title = { Text("Shopping list") }, navigationIcon = { Button(onClick = onOpenDrawer) { Text("Menu") } })
+    }) { paddingValues ->
+        Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
+            Row(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(listName, { listName = it }, label = { Text("New list") }, modifier = Modifier.weight(1f), singleLine = true)
+                Button(onClick = { viewModel.createList(listName); listName = "" }) { Text("Create") }
+            }
+            if (lists.isNotEmpty()) {
+                Text("Lists", modifier = Modifier.padding(top = 12.dp))
+                Row(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)) {
+                    lists.forEach { list -> Button(onClick = { viewModel.selectList(list.id) }) { Text(list.name) } }
+                }
+                OutlinedTextField(itemName, { itemName = it }, label = { Text("Item") }, modifier = Modifier.padding(top = 12.dp), singleLine = true)
+                Row(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(price, { price = it }, label = { Text("Price") }, modifier = Modifier.weight(1f), singleLine = true)
+                    OutlinedTextField(quantity, { quantity = it }, label = { Text("Qty") }, modifier = Modifier.weight(1f), singleLine = true)
+                    Button(onClick = { viewModel.addItem(itemName, price.toDoubleOrNull() ?: -1.0, quantity.toIntOrNull() ?: 0); itemName = ""; price = "" }) { Text("Add") }
+                }
+                Row(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 8.dp)) {
+                    OutlinedTextField(discount, { discount = it }, label = { Text("Discount %") }, modifier = Modifier.weight(1f), singleLine = true)
+                    OutlinedTextField(taxRate, { taxRate = it }, label = { Text("Tax %") }, modifier = Modifier.weight(1f), singleLine = true)
+                    OutlinedTextField(budget, { budget = it }, label = { Text("Budget") }, modifier = Modifier.weight(1f), singleLine = true)
+                }
+                Button(
+                    onClick = {
+                        viewModel.updateSelectedList(
+                            discount.toDoubleOrNull()?.coerceAtLeast(0.0) ?: 0.0,
+                            taxRate.toDoubleOrNull()?.coerceAtLeast(0.0) ?: 0.0,
+                            budget.toDoubleOrNull()?.coerceAtLeast(0.0) ?: 0.0,
+                        )
+                    },
+                    modifier = Modifier.padding(top = 8.dp),
+                ) { Text("Save totals") }
+                Text("Subtotal: ${formatToolNumber(subtotal)}", modifier = Modifier.padding(top = 12.dp))
+                Text("Total: ${formatToolNumber(total)}", modifier = Modifier.padding(bottom = 4.dp))
+                selectedList?.budget?.takeIf { it > 0.0 }?.let { limit ->
+                    if (total > limit) Text("Over budget by ${formatToolNumber(total - limit)}")
+                    else Text("Budget remaining: ${formatToolNumber(limit - total)}")
+                }
+                Button(onClick = {
+                    val lines = items.joinToString("\n") { "${it.name} x${it.quantity}: ${formatToolNumber(it.price * it.quantity)}" }
+                    val message = "${selectedList?.name ?: "Shopping list"}\n$lines\nTotal: ${formatToolNumber(total)}"
+                    context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_TEXT, message)
+                    }, "Share shopping list"))
+                }, modifier = Modifier.padding(bottom = 8.dp)) { Text("Share") }
+                LazyColumn {
+                    items(items, key = { it.id }) { item ->
+                        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp), horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween) {
+                            Text("${item.name} × ${item.quantity}")
+                            Row { Text(formatToolNumber(item.price * item.quantity)); Button(onClick = { viewModel.deleteItem(item.id) }) { Text("Delete") } }
+                        }
+                    }
+                }
+            } else {
+                Text("Create a list to begin", modifier = Modifier.padding(top = 16.dp))
             }
         }
     }
