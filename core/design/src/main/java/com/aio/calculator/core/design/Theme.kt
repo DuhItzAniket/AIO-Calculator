@@ -2,8 +2,11 @@ package com.aio.calculator.core.design
 
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
@@ -19,17 +22,17 @@ fun AioTheme(
     dynamicColorAvailable: Boolean = false,
     content: @Composable () -> Unit
 ) {
+    val context = LocalContext.current
     val systemDark = isSystemInDarkTheme()
     val colorScheme = when (themeMode) {
         ThemeMode.LIGHT -> LightColorScheme
         ThemeMode.DARK -> DarkColorScheme
         ThemeMode.OLED_BLACK -> OledBlackColorScheme
         ThemeMode.SYSTEM_DEFAULT -> if (systemDark) DarkColorScheme else LightColorScheme
-        ThemeMode.DYNAMIC_COLOR -> if (dynamicColorAvailable) {
-            if (systemDark) DarkColorScheme else LightColorScheme
+        ThemeMode.DYNAMIC_COLOR -> if (dynamicColorAvailable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (systemDark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         } else if (systemDark) DarkColorScheme else LightColorScheme
     }
-    val context = LocalContext.current
 
     MaterialTheme(colorScheme = colorScheme, shapes = AioShapesScheme, typography = AioTypographyScheme) {
         SideEffect { updateSystemBars(context, colorScheme) }
