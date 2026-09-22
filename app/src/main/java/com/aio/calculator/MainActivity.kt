@@ -40,7 +40,9 @@ import com.aio.calculator.core.common.ToolDefinition
 import com.aio.calculator.core.common.AngleMode
 import com.aio.calculator.core.design.AioTheme
 import com.aio.calculator.core.math.SpecialistCalculations
+import com.aio.calculator.core.math.AgeCalculator
 import com.aio.calculator.core.units.UnitConverter
+import com.aio.calculator.core.currency.CurrencyConverter
 import com.aio.calculator.core.navigation.NavRoutes
 import com.aio.calculator.feature.calculator.BasicCalculatorScreen
 import com.aio.calculator.feature.calculator.ScientificCalculatorScreen
@@ -49,6 +51,7 @@ import com.aio.calculator.data.AppFavoritesViewModel
 import com.aio.calculator.data.AppRecentViewModel
 import com.aio.calculator.data.AppSavedViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class MainActivity : ComponentActivity() {
     private val historyViewModel: AppHistoryViewModel by viewModels()
@@ -309,12 +312,14 @@ private fun ToolDetailScreen(
                     "statistics_mean", "statistics_median" -> StatisticsToolContent(tool.id)
                     "geometry_triangle" -> TriangleToolContent()
                     "length_converter" -> LengthToolContent()
+                    "currency_converter" -> CurrencyToolContent()
                     "trigonometry" -> TrigonometryToolContent()
                     "physics_speed" -> SpeedToolContent()
                     "chemistry_molarity" -> MolarityToolContent()
                     "electronics_ohms_law" -> OhmsLawToolContent()
                     "finance_emi" -> EmiToolContent()
                     "health_bmi" -> BmiToolContent()
+                    "datetime_age" -> AgeToolContent()
                     else -> {
                         Text(tool.description)
                         Text("Category: ${tool.category.displayName}", modifier = Modifier.padding(top = 8.dp))
@@ -394,6 +399,20 @@ private fun LengthToolContent() {
 }
 
 @Composable
+private fun CurrencyToolContent() {
+    var value by remember { mutableStateOf("") }
+    var from by remember { mutableStateOf("USD") }
+    var to by remember { mutableStateOf("EUR") }
+    var result by remember { mutableStateOf<Double?>(null) }
+    Text("Currency converter", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall)
+    NumberField("Amount", value) { value = it }
+    OutlinedTextField(from, { from = it.uppercase() }, label = { Text("From (USD, EUR, GBP, INR, JPY)") }, modifier = Modifier.padding(top = 8.dp), singleLine = true)
+    OutlinedTextField(to, { to = it.uppercase() }, label = { Text("To (USD, EUR, GBP, INR, JPY)") }, modifier = Modifier.padding(top = 8.dp), singleLine = true)
+    Button(onClick = { result = runCatching { CurrencyConverter.convert(value.toDouble(), from, to) }.getOrNull() }, modifier = Modifier.padding(top = 8.dp)) { Text("Convert") }
+    result?.let { Text("Result: ${formatToolNumber(it)} $to", modifier = Modifier.padding(top = 8.dp)) }
+}
+
+@Composable
 private fun TrigonometryToolContent() {
     var angle by remember { mutableStateOf("") }
     var mode by remember { mutableStateOf(AngleMode.DEGREES) }
@@ -469,6 +488,23 @@ private fun BmiToolContent() {
     NumberField("Height in meters", height) { height = it }
     Button(onClick = { result = runCatching { SpecialistCalculations.bmi(weight.toDouble(), height.toDouble()) }.getOrNull() }) { Text("Calculate BMI") }
     result?.let { Text("BMI: ${formatToolNumber(it)}", modifier = Modifier.padding(top = 8.dp)) }
+}
+
+@Composable
+private fun AgeToolContent() {
+    var birth by remember { mutableStateOf("") }
+    var asOf by remember { mutableStateOf(LocalDate.now().toString()) }
+    var result by remember { mutableStateOf<String?>(null) }
+    Text("Age calculator", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall)
+    OutlinedTextField(birth, { birth = it }, label = { Text("Birth date (YYYY-MM-DD)") }, modifier = Modifier.padding(top = 8.dp), singleLine = true)
+    OutlinedTextField(asOf, { asOf = it }, label = { Text("As of (YYYY-MM-DD)") }, modifier = Modifier.padding(top = 8.dp), singleLine = true)
+    Button(onClick = {
+        result = runCatching {
+            val age = AgeCalculator.between(LocalDate.parse(birth), LocalDate.parse(asOf))
+            "${age.years} years, ${age.months} months, ${age.days} days"
+        }.getOrNull()
+    }, modifier = Modifier.padding(top = 8.dp)) { Text("Calculate age") }
+    result?.let { Text(it, modifier = Modifier.padding(top = 8.dp)) }
 }
 
 @Composable

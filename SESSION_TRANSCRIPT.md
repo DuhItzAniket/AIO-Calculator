@@ -100,3 +100,12 @@ Status: complete; commit/push pending final repository checks.
 - Added unit tests for representative conversions and unsupported-unit rejection.
 - Added a usable length-converter form to the tool-detail flow.
 - Verified `:core:units:testDebugUnitTest` and `:app:assembleDebug`: both successful.
+
+## Checkpoint 9 — finance and currency
+
+Status: in progress; pushed as an intermediate verified slice.
+
+- Added a tested offline currency conversion contract for USD, EUR, GBP, INR, and JPY.
+- Added a searchable currency-converter tool form and connected the existing EMI calculator.
+- Verified `:core:currency:testDebugUnitTest`, `:core:math:testDebugUnitTest`, and `:app:assembleDebug`: all successful.
+- Durable rate caching and scheduled network refresh remain before this checkpoint can be marked complete.

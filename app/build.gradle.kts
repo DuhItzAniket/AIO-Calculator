@@ -74,6 +74,7 @@ dependencies {
     implementation(project(":core:navigation"))
     implementation(project(":core:math"))
     implementation(project(":core:units"))
+    implementation(project(":core:currency"))
     implementation(project(":core:database"))
     implementation(project(":core:datastore"))
     implementation(project(":feature:calculator"))
