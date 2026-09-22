@@ -19,7 +19,7 @@ This is the implementation ledger for the production app. A checkpoint is comple
 | 10 | Health/date/everyday | Informational calculators with validation and limitations | Complete |
 | 11 | Shopping | Shopping lists, totals, tax/discount/budget, persistence and sharing | Complete |
 | 12 | Formula/constants libraries | Searchable libraries connected to tools and centralized data | Complete |
-| 13 | Settings and adaptive UI | Theme modes, dynamic color, accessibility, landscape/tablet/foldable layouts | In progress |
+| 13 | Settings and adaptive UI | Theme modes, dynamic color, accessibility, landscape/tablet/foldable layouts | Complete |
 | 14 | Reliability | Repository/ViewModel/UI tests, error/empty states, rotation/state restoration | Not started |
 | 15 | Release hardening | Release build, R8/resource shrinking, size measurement, baseline profile and docs | Not started |
 

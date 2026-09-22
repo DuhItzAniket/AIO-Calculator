@@ -1,6 +1,7 @@
 package com.aio.calculator.feature.calculator
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -69,6 +70,15 @@ internal fun CalculatorSurface(
         }.onFailure { display = "Error" }
     }
 
+    val rows = listOf(
+        listOf("C", "DEL", "(", ")"),
+        listOf("7", "8", "9", "÷"),
+        listOf("4", "5", "6", "×"),
+        listOf("1", "2", "3", "−"),
+        listOf("0", ".", "+", "="),
+        extraLabels,
+    )
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -81,44 +91,63 @@ internal fun CalculatorSurface(
             )
         },
     ) { paddingValues ->
-        Column(
-            modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Text(
-                text = display,
-                modifier = Modifier.fillMaxWidth().weight(1f),
-                fontSize = 42.sp,
-                fontFamily = FontFamily.Monospace,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.End,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                color = colors.displayText,
-            )
-            val rows = listOf(
-                listOf("C", "DEL", "(", ")"),
-                listOf("7", "8", "9", "÷"),
-                listOf("4", "5", "6", "×"),
-                listOf("1", "2", "3", "−"),
-                listOf("0", ".", "+", "="),
-                extraLabels,
-            )
-            rows.forEach { row ->
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    row.forEach { label ->
-                        KeyButton(label, colors, Modifier.weight(1f)) {
-                            when (label) {
-                                "C" -> { expression = ""; display = "0" }
-                                "DEL" -> { expression = expression.dropLast(1); display = expression.ifBlank { "0" } }
-                                "=" -> evaluate()
-                                "÷" -> append("/")
-                                "×" -> append("*")
-                                "−" -> append("-")
-                                "√" -> append("sqrt(")
-                                "π" -> append("pi")
-                                else -> append(label)
-                            }
+        BoxWithConstraints(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
+            val wideLayout = maxWidth >= 600.dp
+            if (wideLayout) {
+                Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    DisplayText(display, colors, Modifier.weight(1f))
+                    Keyboard(rows, colors, Modifier.weight(1f), ::evaluate, ::append, { expression = expression.dropLast(1); display = expression.ifBlank { "0" } }) { expression = ""; display = "0" }
+                }
+            } else {
+                Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    DisplayText(display, colors, Modifier.weight(1f))
+                    Keyboard(rows, colors, Modifier, ::evaluate, ::append, { expression = expression.dropLast(1); display = expression.ifBlank { "0" } }) { expression = ""; display = "0" }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DisplayText(display: String, colors: CalculatorColorScheme, modifier: Modifier) {
+    Text(
+        text = display,
+        modifier = modifier.fillMaxWidth(),
+        fontSize = 42.sp,
+        fontFamily = FontFamily.Monospace,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.End,
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis,
+        color = colors.displayText,
+    )
+}
+
+@Composable
+private fun Keyboard(
+    rows: List<List<String>>,
+    colors: CalculatorColorScheme,
+    modifier: Modifier,
+    evaluate: () -> Unit,
+    append: (String) -> Unit,
+    delete: () -> Unit,
+    clear: () -> Unit,
+) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        rows.forEach { row ->
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                row.forEach { label ->
+                    KeyButton(label, colors, Modifier.weight(1f)) {
+                        when (label) {
+                            "C" -> clear()
+                            "DEL" -> delete()
+                            "=" -> evaluate()
+                            "÷" -> append("/")
+                            "×" -> append("*")
+                            "−" -> append("-")
+                            "√" -> append("sqrt(")
+                            "π" -> append("pi")
+                            else -> append(label)
                         }
                     }
                 }

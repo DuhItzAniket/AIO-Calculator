@@ -43,6 +43,8 @@ import com.aio.calculator.core.database.entity.SavedCalculationEntity
 import com.aio.calculator.core.common.ToolRegistry
 import com.aio.calculator.core.common.ToolDefinition
 import com.aio.calculator.core.common.AngleMode
+import com.aio.calculator.core.common.DecimalPrecision
+import com.aio.calculator.core.common.ThemeMode
 import com.aio.calculator.core.design.AioTheme
 import com.aio.calculator.core.math.SpecialistCalculations
 import com.aio.calculator.core.math.AgeCalculator
@@ -56,6 +58,8 @@ import com.aio.calculator.feature.calculator.BasicCalculatorScreen
 import com.aio.calculator.feature.calculator.ScientificCalculatorScreen
 import com.aio.calculator.history.AppHistoryViewModel
 import com.aio.calculator.shopping.AppShoppingViewModel
+import com.aio.calculator.ui.theme.ThemeViewModel
+import com.aio.calculator.ui.theme.ThemeUiState
 import com.aio.calculator.data.AppFavoritesViewModel
 import com.aio.calculator.data.AppRecentViewModel
 import com.aio.calculator.data.AppSavedViewModel
@@ -68,10 +72,11 @@ class MainActivity : ComponentActivity() {
     private val savedViewModel: AppSavedViewModel by viewModels()
     private val recentViewModel: AppRecentViewModel by viewModels()
     private val shoppingViewModel: AppShoppingViewModel by viewModels()
+    private val themeViewModel: ThemeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { AioCalculatorApp(historyViewModel, favoritesViewModel, savedViewModel, recentViewModel, shoppingViewModel) }
+        setContent { AioCalculatorApp(historyViewModel, favoritesViewModel, savedViewModel, recentViewModel, shoppingViewModel, themeViewModel) }
     }
 }
 
@@ -83,6 +88,7 @@ private fun AioCalculatorApp(
     savedViewModel: AppSavedViewModel,
     recentViewModel: AppRecentViewModel,
     shoppingViewModel: AppShoppingViewModel,
+    themeViewModel: ThemeViewModel,
 ) {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -91,6 +97,7 @@ private fun AioCalculatorApp(
     val favorites by favoritesViewModel.favorites.collectAsState()
     val saved by savedViewModel.saved.collectAsState()
     val recent by recentViewModel.recent.collectAsState()
+    val themeSettings by themeViewModel.uiState.collectAsState()
 
     fun openDrawer() = scope.launch { drawerState.open() }
     fun navigate(route: String) {
@@ -100,7 +107,7 @@ private fun AioCalculatorApp(
         }
     }
 
-    AioTheme {
+    AioTheme(themeMode = themeSettings.themeMode, dynamicColorAvailable = true) {
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
@@ -156,6 +163,11 @@ private fun AioCalculatorApp(
                         label = { Text("Shopping") },
                         selected = false,
                         onClick = { navigate(NavRoutes.SHOPPING) },
+                    )
+                    NavigationDrawerItem(
+                        label = { Text("Settings") },
+                        selected = false,
+                        onClick = { navigate(NavRoutes.SETTINGS) },
                     )
                 }
             },
@@ -214,6 +226,9 @@ private fun AioCalculatorApp(
                 composable(NavRoutes.CONSTANTS_LIBRARY) { ConstantsLibraryScreen { openDrawer() } }
                 composable(NavRoutes.SHOPPING) {
                     ShoppingScreen(shoppingViewModel, { openDrawer() })
+                }
+                composable(NavRoutes.SETTINGS) {
+                    SettingsScreen(themeSettings, themeViewModel, { openDrawer() })
                 }
             }
         }
@@ -680,6 +695,51 @@ private fun ShoppingScreen(viewModel: AppShoppingViewModel, onOpenDrawer: () -> 
                 }
             } else {
                 Text("Create a list to begin", modifier = Modifier.padding(top = 16.dp))
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SettingsScreen(
+    settings: ThemeUiState,
+    viewModel: ThemeViewModel,
+    onOpenDrawer: () -> Unit,
+) {
+    Scaffold(topBar = {
+        TopAppBar(title = { Text("Settings") }, navigationIcon = { Button(onClick = onOpenDrawer) { Text("Menu") } })
+    }) { paddingValues ->
+        LazyColumn(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
+            item {
+                Text("Theme", style = androidx.compose.material3.MaterialTheme.typography.titleLarge, modifier = Modifier.padding(top = 16.dp))
+                ThemeMode.values().forEach { mode ->
+                    Button(onClick = { viewModel.setThemeMode(mode) }, modifier = Modifier.padding(top = 6.dp)) {
+                        Text(if (settings.themeMode == mode) "✓ ${mode.displayName}" else mode.displayName)
+                    }
+                }
+                Text("Angle mode", style = androidx.compose.material3.MaterialTheme.typography.titleLarge, modifier = Modifier.padding(top = 20.dp))
+                AngleMode.values().forEach { mode ->
+                    Button(onClick = { viewModel.setAngleMode(mode) }, modifier = Modifier.padding(top = 6.dp)) {
+                        Text(if (settings.angleMode == mode) "✓ ${mode.displayName}" else mode.displayName)
+                    }
+                }
+                Text("Decimal precision", style = androidx.compose.material3.MaterialTheme.typography.titleLarge, modifier = Modifier.padding(top = 20.dp))
+                DecimalPrecision.values().forEach { precision ->
+                    Button(onClick = { viewModel.setDecimalPrecision(precision) }, modifier = Modifier.padding(top = 6.dp)) {
+                        Text(if (settings.decimalPrecision == precision) "✓ ${precision.displayName}" else precision.displayName)
+                    }
+                }
+                OutlinedTextField(
+                    value = settings.defaultCurrency,
+                    onValueChange = { viewModel.setDefaultCurrency(it.uppercase().take(3)) },
+                    label = { Text("Default currency") },
+                    modifier = Modifier.padding(top = 20.dp),
+                    singleLine = true,
+                )
+                Button(onClick = { viewModel.setAutoUpdateRates(!settings.autoUpdateRates) }, modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)) {
+                    Text(if (settings.autoUpdateRates) "✓ Auto-update currency rates" else "Auto-update currency rates")
+                }
             }
         }
     }

@@ -134,3 +134,12 @@ Status: complete; commit/push pending final repository checks.
 - Verification command: `./gradlew.bat --no-daemon --max-workers=1 --console=plain :app:assembleDebug`
 - Result: `BUILD SUCCESSFUL` (274 actionable tasks; Room KSP completed).
 - Known environment limitation: `adb devices` reports no attached emulator/device, so the share sheet requires later manual device verification.
+
+## Checkpoint 13 verification — settings and adaptive UI
+
+- Connected theme, angle, precision, currency, and currency-refresh preferences to Preferences DataStore through the live `ThemeViewModel`.
+- Added a navigable Settings screen with persisted controls for all exposed preferences.
+- Enabled Android dynamic color on API 31+ and added a wide-layout calculator arrangement that places the display beside the keyboard at tablet/landscape widths.
+- Verification command: `./gradlew.bat --no-daemon --max-workers=1 --console=plain :app:assembleDebug :feature:calculator:testDebugUnitTest :core:math:testDebugUnitTest`
+- Result: `BUILD SUCCESSFUL`; feature unit tests are currently `NO-SOURCE`, and core math tests pass.
+- Known environment limitation: no emulator/device is attached for runtime rotation, foldable, or screen-reader checks.
