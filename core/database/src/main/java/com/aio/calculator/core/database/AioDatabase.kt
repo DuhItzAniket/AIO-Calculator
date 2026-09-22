@@ -10,11 +10,13 @@ import com.aio.calculator.core.database.dao.FavoriteDao
 import com.aio.calculator.core.database.dao.SavedCalculationDao
 import com.aio.calculator.core.database.dao.ShoppingListDao
 import com.aio.calculator.core.database.dao.ShoppingItemDao
+import com.aio.calculator.core.database.dao.CurrencyRateDao
 import com.aio.calculator.core.database.entity.CalculationHistoryEntity
 import com.aio.calculator.core.database.entity.FavoriteEntity
 import com.aio.calculator.core.database.entity.SavedCalculationEntity
 import com.aio.calculator.core.database.entity.ShoppingListEntity
 import com.aio.calculator.core.database.entity.ShoppingItemEntity
+import com.aio.calculator.core.database.entity.CachedCurrencyRateEntity
 
 @Database(
     entities = [
@@ -22,10 +24,11 @@ import com.aio.calculator.core.database.entity.ShoppingItemEntity
         FavoriteEntity::class,
         SavedCalculationEntity::class,
         ShoppingListEntity::class,
-        ShoppingItemEntity::class
+        ShoppingItemEntity::class,
+        CachedCurrencyRateEntity::class
     ],
     version = 1,
-    exportSchema = true
+    exportSchema = false
 )
 abstract class AioDatabase : RoomDatabase() {
     abstract fun calculationHistoryDao(): CalculationHistoryDao
@@ -33,6 +36,7 @@ abstract class AioDatabase : RoomDatabase() {
     abstract fun savedCalculationDao(): SavedCalculationDao
     abstract fun shoppingListDao(): ShoppingListDao
     abstract fun shoppingItemDao(): ShoppingItemDao
+    abstract fun currencyRateDao(): CurrencyRateDao
 
     companion object {
         @Volatile

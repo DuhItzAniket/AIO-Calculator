@@ -110,6 +110,15 @@ Status: in progress; pushed as an intermediate verified slice.
 - Verified `:core:currency:testDebugUnitTest`, `:core:math:testDebugUnitTest`, and `:app:assembleDebug`: all successful.
 - Durable rate caching and scheduled network refresh remain before this checkpoint can be marked complete.
 
+Checkpoint 9 follow-up: added Room-backed cached rates with a 24-hour freshness policy and explicit refresh; `:core:currency:testDebugUnitTest`, Room KSP, and `:app:assembleDebug` pass.
+
+## Checkpoint 10 — health/date/everyday
+
+Status: complete; pushed with the finance/currency checkpoint.
+
+- BMI, age, percentage, and date-oriented tools validate inputs and avoid displaying invalid results.
+- Age calculation uses calendar-aware `java.time.Period` and has unit coverage.
+
 ## Checkpoint 12 — formula and constants libraries
 
 Status: complete; commit/push pending final repository checks.
