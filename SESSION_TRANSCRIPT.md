@@ -38,3 +38,10 @@ BUILD SUCCESSFUL
 ```
 
 Known non-blocking warning: AGP 8.6.1 warns that compileSdk 36 is newer than its tested compileSdk 35 range. This is recorded for release-hardening follow-up.
+
+## Checkpoint 2 — core calculator engine
+
+Status: complete; commit/push pending final repository checks.
+
+- Added explicit engine tests for memory, last-answer retention, invalid/non-finite input, angle modes, alternate operators, and constants.
+- Verified `:core:math:testDebugUnitTest`: 17 tests passed.
