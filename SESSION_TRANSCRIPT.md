@@ -159,3 +159,4 @@ Status: complete; commit/push pending final repository checks.
 - Result: `BUILD SUCCESSFUL` with `minifyReleaseWithR8` and `shrinkReleaseRes`.
 - Artifact: `app/build/outputs/apk/release/app-release-unsigned.apk`, 2,193,209 bytes; SHA-256 `B8FB590A85703B5678E0F6EDDF7114CF60E5303FA1A4311BB8CC3C202701BA6D`.
 - The APK is intentionally unsigned; production distribution still requires a private signing key/configuration.
+- Baseline-profile generation is deferred because no emulator/device is attached; this is an optimization follow-up.

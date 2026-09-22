@@ -65,6 +65,7 @@ Status: complete; committed and pushed after verification.
 - Verified `:app:assembleRelease`: `BUILD SUCCESSFUL` with R8 and resource shrinking.
 - Measured unsigned release APK: 2,193,209 bytes (~2.09 MB); SHA-256 `B8FB590A85703B5678E0F6EDDF7114CF60E5303FA1A4311BB8CC3C202701BA6D`.
 - The artifact is unsigned and requires the project/release signing configuration before store distribution.
+- Baseline-profile generation is deferred until an emulator/device is available; it is an optimization follow-up, not a functional release blocker.
 
 ## Checkpoint 11 — shopping lists
 
