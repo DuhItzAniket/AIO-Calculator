@@ -14,8 +14,8 @@ This is the implementation ledger for the production app. A checkpoint is comple
 | 5 | Navigation and discovery | Drawer, categories, tool registry, search, favorites and recent screens work | Complete |
 | 6 | Reusable specialist tools | Shared form/result/error components and first algebra/statistics/geometry tools | Complete |
 | 7 | Science and engineering | Trigonometry, physics, chemistry and electronics tools with formula tests | Complete |
-| 8 | Converters | Offline unit conversion framework and representative conversion families | In progress |
-| 9 | Finance and currency | Precision-aware finance tools and cached/offline currency refresh | Not started |
+| 8 | Converters | Offline unit conversion framework and representative conversion families | Complete |
+| 9 | Finance and currency | Precision-aware finance tools and cached/offline currency refresh | In progress |
 | 10 | Health/date/everyday | Informational calculators with validation and limitations | Not started |
 | 11 | Shopping | Shopping lists, totals, tax/discount/budget, persistence and sharing | Not started |
 | 12 | Formula/constants libraries | Searchable libraries connected to tools and centralized data | Not started |

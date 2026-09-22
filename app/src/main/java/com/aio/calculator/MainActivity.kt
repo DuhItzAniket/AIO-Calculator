@@ -40,6 +40,7 @@ import com.aio.calculator.core.common.ToolDefinition
 import com.aio.calculator.core.common.AngleMode
 import com.aio.calculator.core.design.AioTheme
 import com.aio.calculator.core.math.SpecialistCalculations
+import com.aio.calculator.core.units.UnitConverter
 import com.aio.calculator.core.navigation.NavRoutes
 import com.aio.calculator.feature.calculator.BasicCalculatorScreen
 import com.aio.calculator.feature.calculator.ScientificCalculatorScreen
@@ -307,6 +308,7 @@ private fun ToolDetailScreen(
                     "percentage" -> PercentageToolContent()
                     "statistics_mean", "statistics_median" -> StatisticsToolContent(tool.id)
                     "geometry_triangle" -> TriangleToolContent()
+                    "length_converter" -> LengthToolContent()
                     "trigonometry" -> TrigonometryToolContent()
                     "physics_speed" -> SpeedToolContent()
                     "chemistry_molarity" -> MolarityToolContent()
@@ -373,6 +375,22 @@ private fun TriangleToolContent() {
         Text("Calculate")
     }
     result?.let { Text("Area: ${formatToolNumber(it)}", modifier = Modifier.padding(top = 8.dp)) }
+}
+
+@Composable
+private fun LengthToolContent() {
+    var value by remember { mutableStateOf("") }
+    var from by remember { mutableStateOf("km") }
+    var to by remember { mutableStateOf("m") }
+    var result by remember { mutableStateOf<Double?>(null) }
+    Text("Length converter", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall)
+    NumberField("Value", value) { value = it }
+    OutlinedTextField(from, { from = it }, label = { Text("From (m, km, cm, ft, mi)") }, modifier = Modifier.padding(top = 8.dp), singleLine = true)
+    OutlinedTextField(to, { to = it }, label = { Text("To (m, km, cm, ft, mi)") }, modifier = Modifier.padding(top = 8.dp), singleLine = true)
+    Button(onClick = { result = runCatching { UnitConverter.length(value.toDouble(), from, to) }.getOrNull() }, modifier = Modifier.padding(top = 8.dp)) {
+        Text("Convert")
+    }
+    result?.let { Text("Result: ${formatToolNumber(it)} $to", modifier = Modifier.padding(top = 8.dp)) }
 }
 
 @Composable

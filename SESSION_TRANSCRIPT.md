@@ -91,3 +91,12 @@ Status: complete; commit/push pending final repository checks.
 - Added pure, unit-tested formulas for trigonometry, speed, Ohm's law, molarity, EMI, and BMI.
 - Added corresponding registry entries and working tool forms for trigonometry, physics speed, chemistry molarity, electronics Ohm's law, finance EMI, and health BMI.
 - Verified `:core:math:testDebugUnitTest` and `:app:assembleDebug`: both successful.
+
+## Checkpoint 8 — converters
+
+Status: complete; commit/push pending final repository checks.
+
+- Added an offline `UnitConverter` framework for length, mass, and temperature.
+- Added unit tests for representative conversions and unsupported-unit rejection.
+- Added a usable length-converter form to the tool-detail flow.
+- Verified `:core:units:testDebugUnitTest` and `:app:assembleDebug`: both successful.
