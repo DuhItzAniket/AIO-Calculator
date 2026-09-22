@@ -11,6 +11,7 @@ object ToolRegistry {
         ToolDefinition("geometry_triangle", "Triangle", ToolCategory.GEOMETRY, "Triangle area and perimeter", keywords = listOf("area", "perimeter")),
         ToolDefinition("trigonometry", "Trigonometry", ToolCategory.TRIGONOMETRY, "Trigonometric functions", keywords = listOf("sin", "cos", "tan")),
         ToolDefinition("physics_speed", "Speed", ToolCategory.PHYSICS, "Distance, speed, and time", keywords = listOf("velocity")),
+        ToolDefinition("chemistry_molarity", "Molarity", ToolCategory.CHEMISTRY, "Moles of solute divided by solution volume", keywords = listOf("concentration", "moles")),
         ToolDefinition("electronics_ohms_law", "Ohm's Law", ToolCategory.ELECTRONICS, "Voltage, current, and resistance", keywords = listOf("voltage", "current", "resistance", "ohm")),
         ToolDefinition("binary_converter", "Numeric Base Converter", ToolCategory.COMPUTER_SCIENCE, "Convert binary, decimal, hexadecimal, and octal", calculatorType = CalculatorType.CONVERTER, keywords = listOf("binary", "hex", "octal")),
         ToolDefinition("length_converter", "Length Converter", ToolCategory.CONVERTERS, "Convert common length units", calculatorType = CalculatorType.CONVERTER, keywords = listOf("distance", "km", "miles")),

@@ -83,3 +83,11 @@ Status: complete; commit/push pending final repository checks.
 - Implemented working percentage, mean/median, and triangle-area tools.
 - Invalid or incomplete fields leave the result empty rather than producing misleading output.
 - Verified `:app:assembleDebug`: build successful.
+
+## Checkpoint 7 — science and engineering
+
+Status: complete; commit/push pending final repository checks.
+
+- Added pure, unit-tested formulas for trigonometry, speed, Ohm's law, molarity, EMI, and BMI.
+- Added corresponding registry entries and working tool forms for trigonometry, physics speed, chemistry molarity, electronics Ohm's law, finance EMI, and health BMI.
+- Verified `:core:math:testDebugUnitTest` and `:app:assembleDebug`: both successful.

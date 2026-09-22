@@ -37,7 +37,9 @@ import com.aio.calculator.core.database.entity.CalculationHistoryEntity
 import com.aio.calculator.core.database.entity.SavedCalculationEntity
 import com.aio.calculator.core.common.ToolRegistry
 import com.aio.calculator.core.common.ToolDefinition
+import com.aio.calculator.core.common.AngleMode
 import com.aio.calculator.core.design.AioTheme
+import com.aio.calculator.core.math.SpecialistCalculations
 import com.aio.calculator.core.navigation.NavRoutes
 import com.aio.calculator.feature.calculator.BasicCalculatorScreen
 import com.aio.calculator.feature.calculator.ScientificCalculatorScreen
@@ -305,6 +307,12 @@ private fun ToolDetailScreen(
                     "percentage" -> PercentageToolContent()
                     "statistics_mean", "statistics_median" -> StatisticsToolContent(tool.id)
                     "geometry_triangle" -> TriangleToolContent()
+                    "trigonometry" -> TrigonometryToolContent()
+                    "physics_speed" -> SpeedToolContent()
+                    "chemistry_molarity" -> MolarityToolContent()
+                    "electronics_ohms_law" -> OhmsLawToolContent()
+                    "finance_emi" -> EmiToolContent()
+                    "health_bmi" -> BmiToolContent()
                     else -> {
                         Text(tool.description)
                         Text("Category: ${tool.category.displayName}", modifier = Modifier.padding(top = 8.dp))
@@ -365,6 +373,84 @@ private fun TriangleToolContent() {
         Text("Calculate")
     }
     result?.let { Text("Area: ${formatToolNumber(it)}", modifier = Modifier.padding(top = 8.dp)) }
+}
+
+@Composable
+private fun TrigonometryToolContent() {
+    var angle by remember { mutableStateOf("") }
+    var mode by remember { mutableStateOf(AngleMode.DEGREES) }
+    var result by remember { mutableStateOf<Double?>(null) }
+    Text("Sine", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall)
+    NumberField("Angle", angle) { angle = it }
+    Button(onClick = { mode = if (mode == AngleMode.DEGREES) AngleMode.RADIANS else AngleMode.DEGREES }) {
+        Text(mode.displayName)
+    }
+    Button(onClick = { result = angle.toDoubleOrNull()?.let { SpecialistCalculations.sine(it, mode) } }) {
+        Text("Calculate sin")
+    }
+    result?.let { Text("Result: ${formatToolNumber(it)}", modifier = Modifier.padding(top = 8.dp)) }
+}
+
+@Composable
+private fun SpeedToolContent() {
+    var distance by remember { mutableStateOf("") }
+    var time by remember { mutableStateOf("") }
+    var result by remember { mutableStateOf<Double?>(null) }
+    Text("Speed", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall)
+    NumberField("Distance", distance) { distance = it }
+    NumberField("Time", time) { time = it }
+    Button(onClick = { result = runCatching { SpecialistCalculations.speed(distance.toDouble(), time.toDouble()) }.getOrNull() }) { Text("Calculate") }
+    result?.let { Text("Speed: ${formatToolNumber(it)}", modifier = Modifier.padding(top = 8.dp)) }
+}
+
+@Composable
+private fun OhmsLawToolContent() {
+    var current by remember { mutableStateOf("") }
+    var resistance by remember { mutableStateOf("") }
+    var result by remember { mutableStateOf<Double?>(null) }
+    Text("Ohm's law: V = I × R", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall)
+    NumberField("Current", current) { current = it }
+    NumberField("Resistance", resistance) { resistance = it }
+    Button(onClick = { result = current.toDoubleOrNull()?.let { i -> resistance.toDoubleOrNull()?.let { r -> SpecialistCalculations.ohmsVoltage(i, r) } } }) { Text("Calculate voltage") }
+    result?.let { Text("Voltage: ${formatToolNumber(it)}", modifier = Modifier.padding(top = 8.dp)) }
+}
+
+@Composable
+private fun MolarityToolContent() {
+    var moles by remember { mutableStateOf("") }
+    var liters by remember { mutableStateOf("") }
+    var result by remember { mutableStateOf<Double?>(null) }
+    Text("Molarity", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall)
+    NumberField("Moles of solute", moles) { moles = it }
+    NumberField("Liters of solution", liters) { liters = it }
+    Button(onClick = { result = runCatching { SpecialistCalculations.molarity(moles.toDouble(), liters.toDouble()) }.getOrNull() }) { Text("Calculate") }
+    result?.let { Text("Molarity: ${formatToolNumber(it)} mol/L", modifier = Modifier.padding(top = 8.dp)) }
+}
+
+@Composable
+private fun EmiToolContent() {
+    var principal by remember { mutableStateOf("") }
+    var rate by remember { mutableStateOf("") }
+    var months by remember { mutableStateOf("") }
+    var result by remember { mutableStateOf<Double?>(null) }
+    Text("Monthly loan payment", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall)
+    NumberField("Principal", principal) { principal = it }
+    NumberField("Annual interest %", rate) { rate = it }
+    NumberField("Term in months", months) { months = it }
+    Button(onClick = { result = runCatching { SpecialistCalculations.emi(principal.toDouble(), rate.toDouble(), months.toInt()) }.getOrNull() }) { Text("Calculate EMI") }
+    result?.let { Text("Payment: ${formatToolNumber(it)}", modifier = Modifier.padding(top = 8.dp)) }
+}
+
+@Composable
+private fun BmiToolContent() {
+    var weight by remember { mutableStateOf("") }
+    var height by remember { mutableStateOf("") }
+    var result by remember { mutableStateOf<Double?>(null) }
+    Text("Body mass index", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall)
+    NumberField("Weight in kg", weight) { weight = it }
+    NumberField("Height in meters", height) { height = it }
+    Button(onClick = { result = runCatching { SpecialistCalculations.bmi(weight.toDouble(), height.toDouble()) }.getOrNull() }) { Text("Calculate BMI") }
+    result?.let { Text("BMI: ${formatToolNumber(it)}", modifier = Modifier.padding(top = 8.dp)) }
 }
 
 @Composable
