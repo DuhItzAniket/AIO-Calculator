@@ -109,3 +109,10 @@ Status: in progress; pushed as an intermediate verified slice.
 - Added a searchable currency-converter tool form and connected the existing EMI calculator.
 - Verified `:core:currency:testDebugUnitTest`, `:core:math:testDebugUnitTest`, and `:app:assembleDebug`: all successful.
 - Durable rate caching and scheduled network refresh remain before this checkpoint can be marked complete.
+
+## Checkpoint 12 — formula and constants libraries
+
+Status: complete; commit/push pending final repository checks.
+
+- Connected the searchable formula library and scientific constants library to the application drawer and navigation.
+- Verified `:app:assembleDebug`: build successful.

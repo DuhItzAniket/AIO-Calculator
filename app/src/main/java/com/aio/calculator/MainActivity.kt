@@ -43,6 +43,9 @@ import com.aio.calculator.core.math.SpecialistCalculations
 import com.aio.calculator.core.math.AgeCalculator
 import com.aio.calculator.core.units.UnitConverter
 import com.aio.calculator.core.currency.CurrencyConverter
+import com.aio.calculator.core.formula.FormulaLibrary
+import com.aio.calculator.core.formula.FormulaDefinition
+import com.aio.calculator.core.math.ScientificConstants
 import com.aio.calculator.core.navigation.NavRoutes
 import com.aio.calculator.feature.calculator.BasicCalculatorScreen
 import com.aio.calculator.feature.calculator.ScientificCalculatorScreen
@@ -131,6 +134,16 @@ private fun AioCalculatorApp(
                         selected = false,
                         onClick = { navigate(NavRoutes.TOOLS) },
                     )
+                    NavigationDrawerItem(
+                        label = { Text("Formula library") },
+                        selected = false,
+                        onClick = { navigate(NavRoutes.FORMULA_LIBRARY) },
+                    )
+                    NavigationDrawerItem(
+                        label = { Text("Constants") },
+                        selected = false,
+                        onClick = { navigate(NavRoutes.CONSTANTS_LIBRARY) },
+                    )
                 }
             },
         ) {
@@ -182,6 +195,8 @@ private fun AioCalculatorApp(
                 composable(NavRoutes.TOOLS) {
                     ToolsScreen({ openDrawer() }) { toolId -> navigate(NavRoutes.toolRoute(toolId)) }
                 }
+                composable(NavRoutes.FORMULA_LIBRARY) { FormulaLibraryScreen { openDrawer() } }
+                composable(NavRoutes.CONSTANTS_LIBRARY) { ConstantsLibraryScreen { openDrawer() } }
             }
         }
     }
@@ -505,6 +520,58 @@ private fun AgeToolContent() {
         }.getOrNull()
     }, modifier = Modifier.padding(top = 8.dp)) { Text("Calculate age") }
     result?.let { Text(it, modifier = Modifier.padding(top = 8.dp)) }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FormulaLibraryScreen(onOpenDrawer: () -> Unit) {
+    var query by remember { mutableStateOf("") }
+    val formulas = FormulaLibrary.searchFormulas(query)
+    Scaffold(topBar = {
+        TopAppBar(title = { Text("Formula library") }, navigationIcon = { Button(onClick = onOpenDrawer) { Text("Menu") } })
+    }) { paddingValues ->
+        Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
+            OutlinedTextField(query, { query = it }, label = { Text("Search formulas") }, modifier = Modifier.padding(vertical = 12.dp), singleLine = true)
+            LazyColumn {
+                items(formulas, key = { it.id }) { formula -> FormulaRow(formula) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FormulaRow(formula: FormulaDefinition) {
+    Column(modifier = Modifier.padding(vertical = 10.dp)) {
+        Text(formula.name, style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
+        Text(formula.equation)
+        Text(formula.description)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ConstantsLibraryScreen(onOpenDrawer: () -> Unit) {
+    val constants = listOf(
+        "π" to ScientificConstants.PI,
+        "e" to ScientificConstants.E,
+        "φ" to ScientificConstants.PHI,
+        "Speed of light" to ScientificConstants.SPEED_OF_LIGHT,
+        "Gravitational constant" to ScientificConstants.GRAVITATIONAL_CONSTANT,
+        "Planck constant" to ScientificConstants.PLANCK_CONSTANT,
+        "Avogadro constant" to ScientificConstants.AVOGADRO_CONSTANT,
+    )
+    Scaffold(topBar = {
+        TopAppBar(title = { Text("Constants") }, navigationIcon = { Button(onClick = onOpenDrawer) { Text("Menu") } })
+    }) { paddingValues ->
+        LazyColumn(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp)) {
+            items(constants, key = { it.first }) { (name, value) ->
+                Column(modifier = Modifier.padding(vertical = 10.dp)) {
+                    Text(name, style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
+                    Text(formatToolNumber(value))
+                }
+            }
+        }
+    }
 }
 
 @Composable

@@ -18,8 +18,8 @@ This is the implementation ledger for the production app. A checkpoint is comple
 | 9 | Finance and currency | Precision-aware finance tools and cached/offline currency refresh | In progress |
 | 10 | Health/date/everyday | Informational calculators with validation and limitations | Not started |
 | 11 | Shopping | Shopping lists, totals, tax/discount/budget, persistence and sharing | Not started |
-| 12 | Formula/constants libraries | Searchable libraries connected to tools and centralized data | Not started |
-| 13 | Settings and adaptive UI | Theme modes, dynamic color, accessibility, landscape/tablet/foldable layouts | Not started |
+| 12 | Formula/constants libraries | Searchable libraries connected to tools and centralized data | Complete |
+| 13 | Settings and adaptive UI | Theme modes, dynamic color, accessibility, landscape/tablet/foldable layouts | In progress |
 | 14 | Reliability | Repository/ViewModel/UI tests, error/empty states, rotation/state restoration | Not started |
 | 15 | Release hardening | Release build, R8/resource shrinking, size measurement, baseline profile and docs | Not started |
 
