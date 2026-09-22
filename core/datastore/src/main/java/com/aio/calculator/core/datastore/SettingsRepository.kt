@@ -1,130 +1,54 @@
 package com.aio.calculator.core.datastore
 
 import android.content.Context
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.PreferencesKeys
-import androidx.datastore.preferences.core.mutations
-import androidx.datastore.preferences.rxjava3.RxDataStore
-import androidx.datastore.preferences.rxjava3.preferencesDataStore
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import com.aio.calculator.core.common.AngleMode
 import com.aio.calculator.core.common.DecimalPrecision
 import com.aio.calculator.core.common.ThemeMode
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Single
-import javax.inject.Inject
-import javax.inject.Singleton
+import kotlinx.coroutines.flow.first
 
-@Singleton
-class SettingsRepository @Inject constructor(
-    private val context: Context
-) {
-    private val dataStore = context.preferencesDataStore("settings_preferences")
+private val Context.settingsDataStore by preferencesDataStore(name = "settings_preferences")
 
-    private val THEME_MODE = PreferencesKeys.stringKey("theme_mode")
-    private val ANGLE_MODE = PreferencesKeys.stringKey("angle_mode")
-    private val DECIMAL_PRECISION = PreferencesKeys.stringKey("decimal_precision")
-    private val DEFAULT_CURRENCY = PreferencesKeys.stringKey("default_currency")
-    private val AUTO_UPDATE_RATES = PreferencesKeys.booleanKey("auto_update_rates")
-    private val RECENT_TOOLS = PreferencesKeys.stringSetKey("recent_tools")
-
-    fun getThemeMode(): ThemeMode {
-        return try {
-            dataStore.data
-                .map { preferences -> preferences[THEME_MODE] ?: ThemeMode.SYSTEM_DEFAULT.name }
-                .firstOrDefault()
-                .let { ThemeMode.valueOf(it) }
-        } catch (e: Exception) {
-            ThemeMode.SYSTEM_DEFAULT
-        }
+/** Local settings repository backed by Preferences DataStore. */
+class SettingsRepository(private val context: Context) {
+    private object Keys {
+        val theme = stringPreferencesKey("theme")
+        val angle = stringPreferencesKey("angle")
+        val precision = intPreferencesKey("precision")
+        val currency = stringPreferencesKey("currency")
+        val autoUpdate = booleanPreferencesKey("auto_update_rates")
+        val recentTools = stringPreferencesKey("recent_tools")
     }
 
-    suspend fun setThemeMode(themeMode: ThemeMode) {
-        dataStore.edit { preferences ->
-            preferences[THEME_MODE] = themeMode.name
-        }
-    }
+    suspend fun getThemeMode(): ThemeMode = context.settingsDataStore.data.first()[Keys.theme]
+        ?.let { runCatching { ThemeMode.valueOf(it) }.getOrNull() } ?: ThemeMode.SYSTEM_DEFAULT
 
-    fun getAngleMode(): AngleMode {
-        return try {
-            dataStore.data
-                .map { preferences -> preferences[ANGLE_MODE] ?: AngleMode.DEGREES.name }
-                .firstOrDefault()
-                .let { AngleMode.valueOf(it) }
-        } catch (e: Exception) {
-            AngleMode.DEGREES
-        }
-    }
+    suspend fun setThemeMode(value: ThemeMode) { context.settingsDataStore.edit { it[Keys.theme] = value.name } }
 
-    suspend fun setAngleMode(angleMode: AngleMode) {
-        dataStore.edit { preferences ->
-            preferences[ANGLE_MODE] = angleMode.name
-        }
-    }
+    suspend fun getAngleMode(): AngleMode = context.settingsDataStore.data.first()[Keys.angle]
+        ?.let { runCatching { AngleMode.valueOf(it) }.getOrNull() } ?: AngleMode.DEGREES
 
-    fun getDecimalPrecision(): DecimalPrecision {
-        return try {
-            dataStore.data
-                .map { preferences -> preferences[DECIMAL_PRECISION] ?: DecimalPrecision.AUTO.name }
-                .firstOrDefault()
-                .let { DecimalPrecision.valueOf(it) }
-        } catch (e: Exception) {
-            DecimalPrecision.AUTO
-        }
-    }
+    suspend fun setAngleMode(value: AngleMode) { context.settingsDataStore.edit { it[Keys.angle] = value.name } }
 
-    suspend fun setDecimalPrecision(precision: DecimalPrecision) {
-        dataStore.edit { preferences ->
-            preferences[DECIMAL_PRECISION] = precision.name
-        }
-    }
+    suspend fun getDecimalPrecision(): DecimalPrecision = context.settingsDataStore.data.first()[Keys.precision]
+        ?.let { DecimalPrecision.values().getOrNull(it) } ?: DecimalPrecision.AUTO
 
-    fun getDefaultCurrency(): String {
-        return try {
-            dataStore.data
-                .map { preferences -> preferences[DEFAULT_CURRENCY] ?: "USD" }
-                .firstOrDefault()
-        } catch (e: Exception) {
-            "USD"
-        }
-    }
+    suspend fun setDecimalPrecision(value: DecimalPrecision) { context.settingsDataStore.edit { it[Keys.precision] = value.ordinal } }
 
-    suspend fun setDefaultCurrency(currency: String) {
-        dataStore.edit { preferences ->
-            preferences[DEFAULT_CURRENCY] = currency
-        }
-    }
+    suspend fun getDefaultCurrency(): String = context.settingsDataStore.data.first()[Keys.currency] ?: "USD"
+    suspend fun setDefaultCurrency(value: String) { context.settingsDataStore.edit { it[Keys.currency] = value } }
 
-    fun getAutoUpdateRates(): Boolean {
-        return try {
-            dataStore.data
-                .map { preferences -> preferences[AUTO_UPDATE_RATES] ?: true }
-                .firstOrDefault()
-        } catch (e: Exception) {
-            true
-        }
-    }
+    suspend fun getAutoUpdateRates(): Boolean = context.settingsDataStore.data.first()[Keys.autoUpdate] ?: true
+    suspend fun setAutoUpdateRates(value: Boolean) { context.settingsDataStore.edit { it[Keys.autoUpdate] = value } }
 
-    suspend fun setAutoUpdateRates(enabled: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[AUTO_UPDATE_RATES] = enabled
-        }
-    }
+    suspend fun getRecentTools(): List<String> = context.settingsDataStore.data.first()[Keys.recentTools]
+        ?.split('|')?.filter(String::isNotBlank) ?: emptyList()
 
-    fun getRecentTools(): List<String> {
-        return try {
-            dataStore.data
-                .map { preferences -> preferences[RECENT_TOOLS] ?: emptySet() }
-                .firstOrDefault()
-                .toList()
-        } catch (e: Exception) {
-            emptyList()
-        }
-    }
-
-    suspend fun setRecentTools(tools: List<String>) {
-        dataStore.edit { preferences ->
-            preferences[RECENT_TOOLS] = tools.toSet()
-        }
+    suspend fun setRecentTools(value: List<String>) {
+        context.settingsDataStore.edit { it[Keys.recentTools] = value.joinToString("|") }
     }
 }

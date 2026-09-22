@@ -5,7 +5,6 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.startup.Initializer
-import androidx.startup.StartupLogger
 import com.aio.calculator.core.database.dao.CalculationHistoryDao
 import com.aio.calculator.core.database.dao.FavoriteDao
 import com.aio.calculator.core.database.dao.SavedCalculationDao
@@ -55,7 +54,6 @@ abstract class AioDatabase : RoomDatabase() {
 
 class AioDatabaseInitializer : Initializer<AioDatabase> {
     override fun create(context: Context): AioDatabase {
-        StartupLogger.log("Initializing AioDatabase")
         return AioDatabase.getInstance(context)
     }
 

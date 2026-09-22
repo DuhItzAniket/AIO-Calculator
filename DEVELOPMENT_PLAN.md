@@ -6,9 +6,9 @@ This is the implementation ledger for the production app. A checkpoint is comple
 
 | # | Milestone | Exit criteria | Status |
 |---|---|---|---|
-| 0 | Baseline and workflow | Development branch, reproducible toolchain, plan and ledger committed | In progress |
-| 1 | Build foundation | All modules included, dependency graph resolves, debug build passes | Not started |
-| 2 | Core calculator engine | Safe expression evaluation, formatting, validation, comprehensive unit tests | Not started |
+| 0 | Baseline and workflow | Development branch, reproducible toolchain, plan and ledger committed | Complete |
+| 1 | Build foundation | All modules included, dependency graph resolves, debug build passes | Complete |
+| 2 | Core calculator engine | Safe expression evaluation, formatting, validation, comprehensive unit tests | In progress |
 | 3 | Primary calculator UX | Basic/scientific calculator wired into navigation and usable on phone/tablet layouts | Not started |
 | 4 | Persistence | Room history/favorites/saved/recent flows are wired and tested | Not started |
 | 5 | Navigation and discovery | Drawer, categories, tool registry, search, favorites and recent screens work | Not started |
@@ -42,5 +42,6 @@ For every checkpoint:
 - Repository: `https://github.com/DuhItzAniket/AIO-Calculator.git`
 - Working branch: `opencode/aio-calculator`
 - Starting commit: `b28705d`
-- Known blocker: the existing KSP declaration does not resolve with the current repositories/toolchain.
-- Known structural gap: the feature calculator module exists on disk but is not included or depended on.
+- Resolved toolchain blocker: the repository now uses AGP 8.6.1/Kotlin 1.9.24/KSP 1.9.24-1.0.20 with Gradle 8.7.
+- Resolved structural gap: the feature calculator module is included and the debug APK builds.
+- Checkpoint 1 evidence: all declared modules compile, `:core:math:testDebugUnitTest` passes, and `:app:assembleDebug` passes.

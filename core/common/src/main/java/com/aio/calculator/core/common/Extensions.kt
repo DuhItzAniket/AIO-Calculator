@@ -2,15 +2,18 @@ package com.aio.calculator.core.common
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlin.math.abs
+import kotlin.math.floor
+import kotlin.math.log10
+import kotlin.math.pow
 
 /**
  * Extension functions for common operations
@@ -22,10 +25,7 @@ fun <T> MutableStateFlow<T>.update(block: (T) -> T) {
 }
 
 // CoroutineScope extensions
-fun CoroutineScope.launchViewModel(block: suspend () -> Unit) = launch(viewModelScope.coroutineContext) { block() }
-
-// ViewModel extensions
-inline fun <reified VM : ViewModel> ViewModel.viewModelScope(): CoroutineScope = viewModelScope
+fun CoroutineScope.launchViewModel(block: suspend () -> Unit) = launch { block() }
 
 // String extensions
 fun String.isValidNumber(): Boolean = toDoubleOrNull() != null

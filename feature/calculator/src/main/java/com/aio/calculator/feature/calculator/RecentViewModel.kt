@@ -39,7 +39,7 @@ class RecentViewModel(
             recentIds.add(0, toolId)
             // Limit size
             if (recentIds.size > MAX_RECENT) {
-                recentIds = recentIds.take(MAX_RECENT)
+                recentIds = recentIds.take(MAX_RECENT).toMutableList()
             }
             settingsRepository.setRecentTools(recentIds)
             loadRecent()

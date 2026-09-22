@@ -1,10 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")
     id("org.jetbrains.kotlin.plugin.serialization")
 }
-
 android {
     namespace = "com.aio.calculator"
     compileSdk = 36
@@ -44,7 +42,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             isMinifyEnabled = false
@@ -68,12 +65,18 @@ android {
         )
     }
 
-    composeCompiler {
-        kotlinCompilerExtensionVersion.set("1.5.14")
-    }
 }
 
 dependencies {
+    // Application modules
+    implementation(project(":core:common"))
+    implementation(project(":core:design"))
+    implementation(project(":core:navigation"))
+    implementation(project(":core:math"))
+    implementation(project(":core:database"))
+    implementation(project(":core:datastore"))
+    implementation(project(":feature:calculator"))
+
     // Core AndroidX
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.core:core-splashscreen:1.2.0-alpha02")
@@ -101,7 +104,6 @@ dependencies {
     // Room
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
 
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
@@ -125,7 +127,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
 
     // Math expression parsing
-    implementation("org.exp4j:exp4j:0.4.8")
 
     // Testing
     testImplementation("junit:junit:4.13.2")
@@ -143,6 +144,3 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling-data")
 }
 
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
-}

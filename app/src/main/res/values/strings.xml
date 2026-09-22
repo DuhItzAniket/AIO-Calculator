@@ -22,7 +22,7 @@
     <string name="category_converters">Unit Converters</string>
     <string name="category_finance">Finance</string>
     <string name="category_health">Health</string>
-    <string name="category_datetime">Date & Time</string>
+    <string name="category_datetime">Date &amp; Time</string>
     <string name="category_everyday">Everyday</string>
     <string name="category_shopping">Shopping</string>
 
