@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.serialization")
 }
+
 android {
     namespace = "com.aio.calculator"
     compileSdk = 36
@@ -65,21 +66,12 @@ android {
         )
     }
 
+    composeCompiler {
+        kotlinCompilerExtensionVersion.set("1.5.14")
+    }
 }
 
 dependencies {
-    // Application modules
-    implementation(project(":core:common"))
-    implementation(project(":core:design"))
-    implementation(project(":core:navigation"))
-    implementation(project(":core:math"))
-    implementation(project(":core:units"))
-    implementation(project(":core:currency"))
-    implementation(project(":core:formula"))
-    implementation(project(":core:database"))
-    implementation(project(":core:datastore"))
-    implementation(project(":feature:calculator"))
-
     // Core AndroidX
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.core:core-splashscreen:1.2.0-alpha02")
@@ -104,9 +96,9 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.4")
     implementation("androidx.navigation:navigation-fragment-ktx:2.8.4")
 
-    // Room
+    // Room using annotationProcessor instead of ksp
     implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
 
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.1.1")
@@ -117,10 +109,9 @@ dependencies {
 
     // Networking
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.retrofit2:converter-kotlinx-serialization:2.11.0")
+    implementation("com.squareup.retrofit2:converter-scalars:2.11.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
     // Coroutines & Flow
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
@@ -130,6 +121,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
 
     // Math expression parsing
+    implementation("org.exp4j:exp4j:0.4.8")
 
     // Testing
     testImplementation("junit:junit:4.13.2")
@@ -141,9 +133,8 @@ dependencies {
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    androidTestImplementation("androidx.compose.ui:ui-test-manifest")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-tooling-data")
+    androidTestImplementation("android.compose.ui:ui-test-junit4")
+    androidTestImplementation("android.compose.ui:ui-test-manifest")
+    debugImplementation("android.compose.ui:ui-tooling")
+    debugImplementation("android.compose.ui:ui-tooling-data")
 }
-
