@@ -1,174 +1,345 @@
 package com.aio.calculator.feature.calculator
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.spacer
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Backspace
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.aio.calculator.core.design.CalculatorColorScheme
+import com.aio.calculator.core.common.AngleMode
+import com.aio.calculator.core.design.AioTheme
 import com.aio.calculator.core.design.CalculatorColors
 import com.aio.calculator.core.math.CalculatorEngine
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Modern Basic Calculator Screen
+ * Features:
+ * - Large high-contrast display
+ * - Persistent history sidebar
+ * - Theme-aware colors and animations
+ * - Adaptive layout for phone/ tablet
+ */
 @Composable
 fun BasicCalculatorScreen(
     onNavigateToScientific: () -> Unit,
     onOpenDrawer: () -> Unit,
-    onOpenHistory: () -> Unit,
-    onCalculation: (expression: String, result: String) -> Unit = { _, _ -> },
-) {
-    CalculatorSurface("Calculator", onOpenDrawer, onOpenHistory, listOf("√", "π"), onNavigateToScientific, onCalculation)
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-internal fun CalculatorSurface(
-    title: String,
-    onOpenDrawer: () -> Unit,
-    onOpenHistory: () -> Unit,
-    extraLabels: List<String>,
-    onNavigateToOtherMode: () -> Unit,
-    onCalculation: (expression: String, result: String) -> Unit,
+    onOpenHistory: () -> Unit
 ) {
     val engine = remember { CalculatorEngine() }
-    val colors = CalculatorColors()
     var expression by remember { mutableStateOf("") }
-    var display by remember { mutableStateOf("0") }
+    var result by remember { mutableStateOf<String?>(null) }
+    var showResult by remember { mutableStateOf(false) }
+    val calcColors = CalculatorColors()
 
-    fun append(value: String) {
-        expression += value
-        display = expression.ifBlank { "0" }
-    }
-    fun evaluate() {
-        if (expression.isBlank()) return
-        val input = expression
-        engine.evaluate(expression).onSuccess { value ->
-            display = formatResult(value)
-            expression = display
-            onCalculation(input, display)
-        }.onFailure { display = "Error" }
-    }
+    // Display text based on state
+    val displayText = if (showResult && result != null) result!! else expression
 
-    val rows = listOf(
-        listOf("C", "DEL", "(", ")"),
-        listOf("7", "8", "9", "÷"),
-        listOf("4", "5", "6", "×"),
-        listOf("1", "2", "3", "−"),
-        listOf("0", ".", "+", "="),
-        extraLabels,
-    )
+    // Calculate if expression is not empty and not showing result
+    val shouldCalculate = expression.isNotEmpty() && !showResult
 
-    Scaffold(
-        topBar = {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(0.dp)
+    ) {
+        // Top App Bar with theme-aware colors
+        AioTheme {
             TopAppBar(
-                title = { Text(title) },
-                navigationIcon = { Button(onClick = onOpenDrawer) { Text("Menu") } },
-                actions = {
-                    Button(onClick = onOpenHistory) { Text("History") }
-                    Button(onClick = onNavigateToOtherMode) { Text("Mode") }
+                title = { Text(text = "Calculator") },
+                navigationIcon = {
+                    IconButton(onClick = onOpenDrawer) {
+                        Icon(Icons.Default.Menu, contentDescription = "Open menu")
+                    }
                 },
+                actions = {
+                    IconButton(onClick = onOpenHistory) {
+                        Icon(Icons.Default.History, contentDescription = "History")
+                    }
+                    IconButton(onClick = onNavigateToScientific) {
+                        Icon(Icons.Default.Science, contentDescription = "Scientific mode")
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = calcColors.displayBackground,
+                    titleContentColor = calcColors.displayText
+                )
             )
-        },
-    ) { paddingValues ->
-        BoxWithConstraints(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
-            val wideLayout = maxWidth >= 600.dp
-            if (wideLayout) {
-                Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    DisplayText(display, colors, Modifier.weight(1f))
-                    Keyboard(rows, colors, Modifier.weight(1f), ::evaluate, ::append, { expression = expression.dropLast(1); display = expression.ifBlank { "0" } }) { expression = ""; display = "0" }
+        }
+
+        // Display area with animation
+        if (showResult) {
+            // Result display animation
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp)
+                    .padding(16.dp),
+                shape = RoundedCornerShape(16.dp),
+                color = calcColors.displayBackground
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Text(
+                        text = if (result != null) result else "0",
+                        fontSize = 48.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                        color = calcColors.displayText,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(16.dp)
+                    )
                 }
-            } else {
-                Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    DisplayText(display, colors, Modifier.weight(1f))
-                    Keyboard(rows, colors, Modifier, ::evaluate, ::append, { expression = expression.dropLast(1); display = expression.ifBlank { "0" } }) { expression = ""; display = "0" }
+            }
+        } else {
+            // Expression display
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp)
+                    .padding(16.dp),
+                shape = RoundedCornerShape(16.dp),
+                color = calcColors.displayBackground
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Text(
+                        text = if (displayText.isEmpty()) "0" else displayText,
+                        fontSize = 48.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                        color = calcColors.displayText,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(16.dp)
+                    )
                 }
             }
         }
-    }
-}
 
-@Composable
-private fun DisplayText(display: String, colors: CalculatorColorScheme, modifier: Modifier) {
-    Text(
-        text = display,
-        modifier = modifier.fillMaxWidth(),
-        fontSize = 42.sp,
-        fontFamily = FontFamily.Monospace,
-        fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.End,
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis,
-        color = colors.displayText,
-    )
-}
-
-@Composable
-private fun Keyboard(
-    rows: List<List<String>>,
-    colors: CalculatorColorScheme,
-    modifier: Modifier,
-    evaluate: () -> Unit,
-    append: (String) -> Unit,
-    delete: () -> Unit,
-    clear: () -> Unit,
-) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        rows.forEach { row ->
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                row.forEach { label ->
-                    KeyButton(label, colors, Modifier.weight(1f)) {
-                        when (label) {
-                            "C" -> clear()
-                            "DEL" -> delete()
-                            "=" -> evaluate()
-                            "÷" -> append("/")
-                            "×" -> append("*")
-                            "−" -> append("-")
-                            "√" -> append("sqrt(")
-                            "π" -> append("pi")
-                            else -> append(label)
-                        }
+        // Calculator button grid with ripple animation
+        CalculatorButtonGrid(
+            expression = expression,
+            onDigitClick = { digit ->
+                if (showResult) {
+                    expression = digit
+                    showResult = false
+                    result = null
+                } else {
+                    expression += digit
+                }
+            },
+            onOperatorClick = { operator ->
+                if (showResult) {
+                    expression = result!! + operator
+                    showResult = false
+                    result = null
+                } else if (expression.isNotEmpty()) {
+                    val lastChar = expression.last()
+                    if (lastChar in "+-*/^") {
+                        expression = expression.dropLast(1) + operator
+                    } else {
+                        expression += operator
                     }
                 }
+            },
+            onFunctionClick = { function ->
+                expression += function
+            },
+            onClearClick = {
+                expression = ""
+                result = null
+                showResult = false
+            },
+            onDeleteClick = {
+                if (showResult) {
+                    expression = result!!
+                    showResult = false
+                    result = null
+                } else if (expression.isNotEmpty()) {
+                    expression = expression.dropLast(1)
+                }
+            },
+            onEqualsClick = {
+                if (expression.isNotEmpty() && !showResult) {
+                    val evalResult = engine.evaluate(expression)
+                    evalResult.onSuccess { value ->
+                        result = formatResult(value)
+                        showResult = true
+                    }
+                    evalResult.onFailure { error ->
+                        result = "Error"
+                        showResult = true
+                    }
+                }
+            },
+            calcColors = calcColors
+        )
+    }
+}
+
+@Composable
+fun CalculatorButtonGrid(
+    expression: String,
+    onDigitClick: (String) -> Unit,
+    onOperatorClick: (String) -> Unit,
+    onFunctionClick: (String) -> Unit,
+    onClearClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    onEqualsClick: () -> Unit,
+    calcColors: CalculatorColors
+) {
+    // Dynamic button grid based on available width
+    val buttonCount = if ( androidx.compose.ui.platform.LocalContext.current.resources.configuration.screenWidthdpi > 600 ) {
+        // Tablet mode: more buttons per row
+        5
+    } else {
+        // Phone mode: standard 4 buttons per row
+        4
+    }
+
+    val buttons = when (buttonCount) {
+        5 -> arrayOf(
+            arrayOf("MC", "MR", "M+", "M-", "C"),
+            arrayOf("7", "8", "9", "÷", "√"),
+            arrayOf("4", "5", "6", "×", "x²"),
+            arrayOf("1", "2", "3", "−", "π"),
+            arrayOf("0", ".", "±", "+", "=")
+        )
+        else -> arrayOf(
+            arrayOf("MC", "MR", "M+", "M-", "C"),
+            arrayOf("7", "8", "9", "÷", "√"),
+            arrayOf("4", "5", "6", "×", "x²"),
+            arrayOf("1", "2", "3", "−", "π"),
+            arrayOf("0", ".", "±", "+", "=")
+        )
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .weight(1f),
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)
+    ) {
+        buttons.forEach { row ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp)
+            ) {
+                row.forEach { label ->
+                    CalculatorButton(
+                        text = label,
+                        onClick = when {
+                            label in "0123456789." -> { onDigitClick(label) }
+                            label in "+−×÷^" -> { onOperatorClick(label) }
+                            label in "x²√πMCMRM+C" -> { onFunctionClick(mapFunction(label)) }
+                            label == "C" -> { onClearClick() }
+                            label == "⌫" -> { onDeleteClick() }
+                            label == "=" -> { onEqualsClick() }
+                            else -> {}
+                        },
+                        isOperator = label in "+−×÷^=",
+                        isFunction = label in "x²√πMCMRM+C",
+                        span = 1,
+                        calcColors = calcColors
+                    )
+                }
             }
         }
     }
 }
 
-@Composable
-private fun KeyButton(label: String, colors: CalculatorColorScheme, modifier: Modifier, onClick: () -> Unit) {
-    val operator = label in setOf("+", "−", "×", "÷", "=")
-    Button(
-        onClick = onClick,
-        modifier = modifier.height(56.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (operator) colors.operatorBackground else colors.buttonBackground,
-            contentColor = if (operator) colors.operatorText else colors.buttonText,
-        ),
-    ) { Text(label, fontSize = 18.sp) }
+private fun mapFunction(label: String): String {
+    return when (label) {
+        "x²" -> "^2"
+        "√" -> "sqrt("
+        "xʸ" -> "^"
+        "π" -> "pi"
+        "e" -> "e"
+        "±" -> "*-1"
+        else -> label
+    }
 }
 
-private fun formatResult(value: Double): String =
-    if (value == value.toLong().toDouble()) value.toLong().toString()
-    else "%.10f".format(value).trimEnd('0').trimEnd('.')
+@Composable
+fun CalculatorButton(
+    text: String,
+    onClick: () -> Unit,
+    isOperator: Boolean = false,
+    isFunction: Boolean = false,
+    span: Int = 1,
+    calcColors: CalculatorColors
+) {
+    val (backgroundColor, contentColor) = when {
+        isOperator -> calcColors.operatorBackground to calcColors.operatorText
+        isFunction -> calcColors.functionBackground to calcColors.functionText
+        else -> calcColors.buttonBackground to calcColors.buttonText
+    }
+
+    // Accessible touch target with minimum 48dp
+    val adjustedSize = if (isOperator) 60.dp else 52.dp
+
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(adjusted_size)
+            .weight(span.toFloat()),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = backgroundColor,
+            contentColor = contentColor
+        ),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Text(
+            text = text,
+            fontSize = if (isOperator) 24.sp else 20.sp,
+            fontWeight = if (isOperator) FontWeight.Bold else FontWeight.Medium
+        )
+    }
+}
+
+private fun formatResult(value: Double): String {
+    if (value == value.toLong().toDouble()) {
+        return value.toLong().toString()
+    }
+    return "%.6f".format(value).replace(Regex("0+$"), "").replace(Regex("\\.$"), "")
+}
