@@ -4,7 +4,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import kotlinx.serialization.Serializable
 
 @Entity(
     tableName = "shopping_items",
@@ -18,7 +17,6 @@ import kotlinx.serialization.Serializable
     ],
     indices = [Index("listId")]
 )
-@Serializable
 data class ShoppingItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val listId: Long,

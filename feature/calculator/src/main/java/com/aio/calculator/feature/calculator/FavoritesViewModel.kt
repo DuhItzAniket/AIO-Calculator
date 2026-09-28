@@ -9,6 +9,7 @@ import com.aio.calculator.core.database.dao.FavoriteDao
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -43,7 +44,7 @@ class FavoritesViewModel(
 
     fun toggleFavorite(toolId: String) {
         viewModelScope.launch {
-            val isCurrentlyFavorite = database.favoriteDao().isFavorite(toolId).firstOrNull() != null
+            val isCurrentlyFavorite = database.favoriteDao().isFavorite(toolId).first() != null
             if (isCurrentlyFavorite) {
                 database.favoriteDao().remove(toolId)
             } else {

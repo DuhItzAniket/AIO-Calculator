@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aio.calculator.core.common.HistoryItem
 import com.aio.calculator.core.common.Result
+import com.aio.calculator.core.common.ToolRegistry
 import com.aio.calculator.core.database.AioDatabase
 import com.aio.calculator.core.database.dao.CalculationHistoryDao
 import com.aio.calculator.core.database.entity.CalculationHistoryEntity

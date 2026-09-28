@@ -23,8 +23,8 @@ data class FormulaDefinition(
  */
 @Serializable
 enum class FormulaCategory(
-    val displayName: String,
-    val order: Int
+    val order: Int,
+    val displayName: String
 ) {
     MATHEMATICS(1, "Mathematics"),
     PHYSICS(2, "Physics"),
@@ -270,8 +270,6 @@ object FormulaLibrary {
     // ==========================================================================
     // ALL FORMULAS COLLECTION
     // ==========================================================================
-    @get:Suppress("UNCHECKED_CAST")
-    @get:Serializable
     private val _allFormulas = listOf(
         // Mathematics
         pythagoreanTheorem,
@@ -296,22 +294,17 @@ object FormulaLibrary {
         triangle_area,
         rectangle_area,
         cylinder_volume
-    ).sortedBy { (formula) -> (formula.category.order, formula.order) }
+    ).sortedWith(compareBy<FormulaDefinition> { it.category.order }.thenBy { it.order })
 
     /** Get all formulas */
-    @get:Suppress("UNCHECKED_CAST")
-    @get:Serializable
     val allFormulas: List<FormulaDefinition> = _allFormulas
 
     /** Get formulas by category */
-    @get:Suppress("UNCHECKED_CAST")
-    @get:Serializable
     fun getFormulas(category: FormulaCategory): List<FormulaDefinition> {
         return _allFormulas.filter { it.category == category }
     }
 
     /** Get formula by ID */
-    @get:Suppress("UNCHECKED_CAST")
     fun getFormula(id: String): FormulaDefinition? {
         return _allFormulas.firstOrNull { it.id == id }
     }
